@@ -128,23 +128,57 @@ export const userDummyData = {
 }
 
 // Hotel Dummy Data
-export const hotelDummyData = {
+export const hotelDummyData = [
+  {
     "_id": "67f76393197ac559e4089b72",
     "name": "Urbanza Suites",
-    "address": "Main Road  123 Street , 23 Colony",
+    "address": "Main Road 123 Street, 23 Colony",
     "contact": "+0123456789",
     "owner": userDummyData,
     "city": "New York",
     "createdAt": "2025-04-10T06:22:11.663Z",
     "updatedAt": "2025-04-10T06:22:11.663Z",
     "__v": 0
-}
+  },
+  {
+    "_id": "67f76393197ac559e4089b73",
+    "name": "Ocean Breeze Resort",
+    "address": "45 Beach Avenue, Palm District",
+    "contact": "+0123456790",
+    "owner": userDummyData,
+    "city": "Miami",
+    "createdAt": "2025-04-11T09:15:20.123Z",
+    "updatedAt": "2025-04-11T09:15:20.123Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f76393197ac559e4089b74",
+    "name": "Royal Orchid Hotel",
+    "address": "78 Central Plaza, Downtown",
+    "contact": "+0123456791",
+    "owner": userDummyData,
+    "city": "Chicago",
+    "createdAt": "2025-04-12T10:42:35.456Z",
+    "updatedAt": "2025-04-12T10:42:35.456Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f76393197ac559e4089b75",
+    "name": "Skyline Inn",
+    "address": "101 Sunset Boulevard",
+    "contact": "+0123456792",
+    "owner": userDummyData,
+    "city": "Los Angeles",
+    "createdAt": "2025-04-13T08:20:45.789Z",
+    "updatedAt": "2025-04-13T08:20:45.789Z",
+    "__v": 0
+  }]
 
 // Rooms Dummy Data
 export const roomsDummyData = [
     {
         "_id": "67f7647c197ac559e4089b96",
-        "hotel": hotelDummyData,
+        "hotel": hotelDummyData[0],
         "roomType": "Double Bed",
         "pricePerNight": 399,
         "amenities": ["Room Service", "Mountain View", "Pool Access"],
@@ -156,7 +190,7 @@ export const roomsDummyData = [
     },
     {
         "_id": "67f76452197ac559e4089b8e",
-        "hotel": hotelDummyData,
+        "hotel": hotelDummyData[1],
         "roomType": "Double Bed",
         "pricePerNight": 299,
         "amenities": ["Room Service", "Mountain View", "Pool Access"],
@@ -168,7 +202,7 @@ export const roomsDummyData = [
     },
     {
         "_id": "67f76406197ac559e4089b82",
-        "hotel": hotelDummyData,
+        "hotel": hotelDummyData[2],
         "roomType": "Double Bed",
         "pricePerNight": 249,
         "amenities": ["Free WiFi", "Free Breakfast", "Room Service"],
@@ -180,7 +214,7 @@ export const roomsDummyData = [
     },
     {
         "_id": "67f763d8197ac559e4089b7a",
-        "hotel": hotelDummyData,
+        "hotel": hotelDummyData[3],
         "roomType": "Single Bed",
         "pricePerNight": 199,
         "amenities": ["Free WiFi", "Room Service", "Pool Access"],
