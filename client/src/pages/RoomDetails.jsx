@@ -7,14 +7,45 @@ const RoomDetails = () => {
   const {id} = useParams()
   const [room , setRoom] = useState(null)
   const [mainImage , setMainImage] = useState(null)
+  const [checkInDate, setCheckInDate] = useState('')
+  const [checkOutDate, setCheckOutDate] = useState('')
+  const [guests, setGuests] = useState(1)
+  const [toast, setToast] = useState(null)
+
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3000)
+  }
 
   useEffect(()=>{
- const room = roomsDummyData.find((room )=> room._id === id )
-  room && setRoom(room)
-  room && setMainImage(room.images[0])
-  },[])
+    const room = roomsDummyData.find((room)=> room._id === id)
+    room && setRoom(room)
+    room && setMainImage(room.images[0])
+  },[id])
+
+  const handleAvailabilityCheck = (e) => {
+    e.preventDefault()
+    if (!checkInDate || !checkOutDate) return
+    if (new Date(checkInDate) >= new Date(checkOutDate)) {
+      showToast('Check-out date must be after check-in date.')
+      return
+    }
+    // TODO: wire up to booking API
+    showToast(`Availability checked for ${guests} guest(s) — ${checkInDate} to ${checkOutDate}`, 'success')
+  }
   return  room && (
     <div className='py-28 md:py-35 px-4 md:px-16 lg:px-24 xl:px-32'>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg text-white text-sm font-medium transition-all ${toast.type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
+          <div>
+            <p className='font-semibold text-xs uppercase tracking-wide opacity-80'>Ganeshaya Stays</p>
+            <p>{toast.message}</p>
+          </div>
+          <button onClick={() => setToast(null)} className='ml-2 opacity-70 hover:opacity-100 text-lg leading-none'>&times;</button>
+        </div>
+      )}
       {/* Room Details */}
       <div className='flex flex-col md:flex-row items-start md:items-center gap-2'>
         <h1 className='text-3xl md:text-4xl font-playfair'>{room.hotel.name}<span className='font-inter text-sm'>({room.roomType})</span></h1>
@@ -64,34 +95,28 @@ const RoomDetails = () => {
 <p className='text-2xl font-medium'>${room.pricePerNight}/night</p>
 </div>
 {/* checkIn checkOut -form */}
-<form className='flex flex-col md:flex-row items-start md:items-center justify-between bg:white shadow-[0px_0px_20px_rgba(0,0,0,0.15)] p-6 rounded-xl mx-auto mt-16 max-w-6xl'>
+<form onSubmit={handleAvailabilityCheck} className='flex flex-col md:flex-row items-start md:items-center justify-between bg-white shadow-[0px_0px_20px_rgba(0,0,0,0.15)] p-6 rounded-xl mx-auto mt-16 max-w-6xl'>
   <div className='flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500'>
     <div className='flex flex-col'>
       <label htmlFor='checkInDate' className='font-medium'>Check-In</label>
-      <input type='date' id='checkInDate' placeholder='Check-In' className='w-full rounded border-gray-300 px-3 py-2 mt-1.5 outline-none' required/>
+      <input type='date' id='checkInDate' value={checkInDate} onChange={(e) => setCheckInDate(e.target.value)} className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required/>
     </div>
 
-<div className='w-px h-15 bg-gray-300/70 max-md:hidden'>
+    <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
 
-</div>
-      <div className='flex flex-col'>
+    <div className='flex flex-col'>
       <label htmlFor='checkOutDate' className='font-medium'>Check-Out</label>
-      <input type='date' id='checkOutDate' placeholder='Check-Out' className='w-full rounded border-gray-300 px-3 py-2 mt-1.5 outline-none' required/>
+      <input type='date' id='checkOutDate' value={checkOutDate} onChange={(e) => setCheckOutDate(e.target.value)} className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required/>
     </div>
 
-<div className='w-px h-15 bg-gray-300/70 max-md:hidden'>
+    <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
 
-</div>
-
-      <div className='flex flex-col'>
-      <label htmlFor='guests' className='font-medium'>Guest</label>
-      <input type='number' id='guests' placeholder='0' className='max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required/>
+    <div className='flex flex-col'>
+      <label htmlFor='guests' className='font-medium'>Guests</label>
+      <input type='number' id='guests' min={1} value={guests} onChange={(e) => setGuests(e.target.value)} className='max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required/>
     </div>
-
   </div>
-  <button type ="submit" className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-25 py-3 md:py-4 text-base cursor-pointer'>Check Availability</button>
-
-
+  <button type='submit' className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-25 py-3 md:py-4 text-base cursor-pointer'>Check Availability</button>
 </form>
 
 {/* Common specifications */}
