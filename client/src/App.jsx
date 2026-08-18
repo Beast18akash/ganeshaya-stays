@@ -36,7 +36,7 @@ const App = () => {
             <Route index element={<Dashboard />} />
             <Route path='add-room' element={<AddRoom />} />
             <Route path='list-rooms' element={<ListRoom />} />
-          </Route>
+            </Route>
         </Routes>
       </div>
 
