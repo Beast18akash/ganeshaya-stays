@@ -124,8 +124,8 @@ const AllRooms = () => {
             </div>
 
             {/* Filters */}
-            <div className='bg-white w-80 border border-gray-300 text-gray-600 max-lg:mb-8 min-lg:mt-16'>
-                <div className={`flex items-center justify-between px-5 py-2.5 min-lg:border-gray-300 ${openFilters && 'border-b'}`}>
+            <div className='bg-white w-80 border border-gray-300 text-gray-600 max-lg:mb-8 lg:mt-16'>
+                <div className={`flex items-center justify-between px-5 py-2.5 lg:border-gray-300 ${openFilters && 'border-b'}`}>
                     <p className='text-base font-medium text-gray-800'>FILTERS</p>
                     <div className='text-xs cursor-pointer'>
                         <span onClick={() => setOpenFilters(!openFilters)} className='lg:hidden'>{openFilters ? 'HIDE' : 'SHOW'}</span>

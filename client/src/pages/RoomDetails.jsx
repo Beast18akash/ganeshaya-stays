@@ -71,7 +71,7 @@ const RoomDetails = () => {
   <div className='grid grid-cols-2 gap-4 lg:w-1/2 w-full'>
     {room?.images.length > 1 && room.images.map((image, index) => (
       <img src={image} key={index} alt="Room Image"
-        className={`w-full rounded-xl shadow-md object-cover cursor-pointer ${mainImage === image ? "outline outline-3 outline-orange-500" : ""}`}
+        className={`w-full rounded-xl shadow-md object-cover cursor-pointer ${mainImage === image ? "outline-3 outline-orange-500" : ""}`}
         onClick={() => setMainImage(image)}
       />
     ))}
@@ -133,7 +133,7 @@ const RoomDetails = () => {
 </div>
 
 <div>
-  <p className='max-w-3xl border-y border-y border-gray-300 my-15 py-10 text-gray-500'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa nam excepturi animi fuga omnis iusto dolores repellat accusamus obcaecati, quasi ipsum, sunt dicta odio necessitatibus veniam repellendus, non ipsam quibusdam. Ut mollitia, dolorem quasi voluptatum cum qui atque, perferendis soluta veniam dolorum placeat quidem enim quod! Iusto nam explicabo amet perspiciatis fugit tempora deleniti sapiente ab!</p>
+  <p className='max-w-3xl  border-y border-gray-300 my-15 py-10 text-gray-500'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa nam excepturi animi fuga omnis iusto dolores repellat accusamus obcaecati, quasi ipsum, sunt dicta odio necessitatibus veniam repellendus, non ipsam quibusdam. Ut mollitia, dolorem quasi voluptatum cum qui atque, perferendis soluta veniam dolorum placeat quidem enim quod! Iusto nam explicabo amet perspiciatis fugit tempora deleniti sapiente ab!</p>
 </div>
 {/* Hosted By */}
 <div className='flex flex-col items-start gap-0'>

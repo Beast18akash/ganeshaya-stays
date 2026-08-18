@@ -7,7 +7,6 @@ import AllRooms from './pages/AllRooms';
 import RoomDetails from './pages/RoomDetails';
 import MyBookings from './pages/MyBookings';
 import Experience from './pages/Experience';
-import About from './pages/About';
 import HotelReg from './components/HotelReg';
 import Layout from './pages/HotelOwner/Layout';
 import Dashboard from './pages/HotelOwner/Dashboard';
@@ -31,7 +30,6 @@ const App = () => {
           <Route path='/rooms/:id' element={<RoomDetails />} />
           <Route path='/my-bookings' element={<MyBookings />} />
           <Route path='/experience' element={<Experience />} />
-          <Route path='/about' element={<About />} />
 
           {/* Owner routes — wrapped in Layout */}
           <Route path='/owner' element={<Layout />}>
