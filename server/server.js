@@ -4,11 +4,16 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import { clerkMiddleware } from "@clerk/express";
 import clerkWebhook from "./controllers/clerkWebhooks.js";
-
+import userRouter from "./routes/user.route.js";
+import hotelRouter from './Routes/hotel.Route.js'
+import roomRouter from './Routes/roomRoute.js'
 const app = express();
 
 // Connect MongoDB
 connectDB();
+
+// Connect Cloudinary
+connectCloudinary();
 
 // Enable CORS
 app.use(cors());
@@ -31,6 +36,10 @@ app.use(clerkMiddleware());
 app.get("/", (req, res) => {
     res.send("API is working!");
 });
+
+app.use("/api/user", userRouter);
+app.use("/api/hotels", hotelRouter);
+app.use("/api/rooms", roomRouter);
 
 const PORT = process.env.PORT || 3000;
 
