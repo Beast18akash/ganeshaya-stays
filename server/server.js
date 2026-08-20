@@ -4,7 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import { clerkMiddleware } from "@clerk/express";
 import clerkWebhook from "./controllers/clerkWebhooks.js";
-import userRouter from "./routes/user.route.js";
+import userRouter from "./Routes/user.route.js";
 import hotelRouter from './Routes/hotel.Route.js'
 import roomRouter from './Routes/roomRoute.js'
 import connectCloudinary from "./config/cloudinary.js";
