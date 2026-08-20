@@ -8,6 +8,7 @@ import userRouter from "./Routes/user.Route.js";
 import hotelRouter from './Routes/hotel.Route.js'
 import roomRouter from './Routes/roomRoute.js'
 import connectCloudinary from "./config/cloudinary.js";
+import Bookingrouter from "./Routes/booking.Routes.js";
 const app = express();
 
 // Connect MongoDB
@@ -41,6 +42,7 @@ app.get("/", (req, res) => {
 app.use("/api/user", userRouter);
 app.use("/api/hotels", hotelRouter);
 app.use("/api/rooms", roomRouter);
+app.use("/api/bookings", Bookingrouter);
 
 const PORT = process.env.PORT || 3000;
 
