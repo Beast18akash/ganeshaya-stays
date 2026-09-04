@@ -1,37 +1,94 @@
-import moongoose from "mongoose";
+import mongoose from "mongoose";
 
-
-const userSchema = new moongoose.Schema({
-    _id: {
-        type: String,
-        required: true
+const providerSchema = new mongoose.Schema(
+  {
+    provider: {
+      type: String,
+      required: true,
+      enum: ["local", "google", "github"],
     },
-    username: {
-        type: String,
-        required: true
+    providerId: {
+      type: String,
+      default: null,
     },
-    email: {
-        type: String,   
-        required: true  
+    linkedAt: {
+      type: Date,
+      default: Date.now,
     },
-    image : {
-        type: String,
-        required: true
-    },
-    role: {
-        type: String,
-        enum: ['user', 'hotelOwner'],
-        default: 'user'
-    },
-    recentSearchedCities: [{
-        type: String,
-        required: true
-    }],
-} ,{
-    timestamps: true
-}
+  },
+  { _id: false }
 );
 
-const User = moongoose.model('User', userSchema);
+const userSchema = new mongoose.Schema(
+  {
+    fullname: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      default: null,
+    },
+    providers: {
+      type: [providerSchema],
+      default: [],
+    },
+    profilePicture: {
+      type: String,
+      default: null,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    role: {
+      type: String,
+      enum: ["user", "hotelOwner"],
+      default: "user",
+    },
+    recentSearchedCities: {
+      type: [String],
+      default: [],
+    },
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-export default User;
+userSchema.methods.hasProvider = function (providerName) {
+  return this.providers.some((p) => p.provider === providerName);
+};
+
+userSchema.methods.linkProvider = function (providerName, providerId) {
+  const alreadyLinked = this.providers.some((p) => p.provider === providerName);
+
+  if (!alreadyLinked) {
+    this.providers.push({
+      provider: providerName,
+      providerId: providerId ?? null,
+      linkedAt: new Date(),
+    });
+    return true;
+  }
+
+  return false;
+};
+
+export default mongoose.model("User", userSchema);

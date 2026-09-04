@@ -62,9 +62,9 @@ const Dashboard = () => {
                   {/* Guest */}
                   <td className='px-6 py-4'>
                     <div className='flex items-center gap-3'>
-                      <img src={booking.user.image} alt={booking.user.username} className='w-8 h-8 rounded-full object-cover' />
+                      <img src={booking.user.profilePicture || assets.userIcon} alt={booking.user.fullname} className='w-8 h-8 rounded-full object-cover' />
                       <div>
-                        <p className='font-medium text-gray-800'>{booking.user.username}</p>
+                        <p className='font-medium text-gray-800'>{booking.user.fullname}</p>
                         <p className='text-xs text-gray-400'>{booking.user.email}</p>
                       </div>
                     </div>

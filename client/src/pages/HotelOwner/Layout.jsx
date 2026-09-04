@@ -20,7 +20,7 @@ const Layout = () => {
         {/* Logo */}
         <div className='flex items-center gap-3 px-4 py-5 border-b border-gray-100'>
           <Link to='/'>
-            <img src={assets.logo} alt='logo' className='h-8 invert opacity-80' />
+            <img src={assets.logo} alt='Ganeshaya Stays' className='h-11' />
           </Link>
         </div>
 
@@ -60,7 +60,7 @@ const Layout = () => {
         <div className='sticky top-0 z-30 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between'>
           <p className='text-sm text-gray-500'>Hotel Owner Panel</p>
           <div className='flex items-center gap-2'>
-            <img src={assets.logo} alt='logo' className='h-6 invert opacity-60' />
+            <img src={assets.logo} alt='Ganeshaya Stays' className='h-9' />
           </div>
         </div>
 

@@ -6,7 +6,7 @@ import cloudinary from 'cloudinary';
 export const createRoom = async (req, res) => {
     try {
         const { roomType, pricePerNight, amenities } = req.body;
-        const hotel = await Hotel.findOne({ owner: req.auth.userId });
+        const hotel = await Hotel.findOne({ owner: req.user._id });
         if (!hotel) {
             return res.status(404).json({ message: "Hotel not found" });
         }
@@ -30,7 +30,7 @@ export const createRoom = async (req, res) => {
 //  Api to get all rooms for a hotel
 export const getRooms = async (req, res) => {
     try {
-        const rooms = await Room.find({ isAvailable: true }).populate({ path: 'hotel', populate: { path: 'owner', select: 'iamge' } }).sort({ createdAt: -1 });
+        const rooms = await Room.find({ isAvailable: true }).populate({ path: 'hotel', populate: { path: 'owner', select: 'profilePicture fullname' } }).sort({ createdAt: -1 });
         res.status(200).json({ success: true, rooms });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -41,7 +41,7 @@ export const getRooms = async (req, res) => {
 //  Api to get all rooms for a  specific hotel
 export const getOwnerRooms = async (req, res) => {
     try {
-        const hotelData  = await Hotel.findOne({ owner : req.auth.userId });
+        const hotelData  = await Hotel.findOne({ owner : req.user._id });
         if(!hotelData) {
             return res.status(404).json({ success: false, message: "Hotel not found" });
         }

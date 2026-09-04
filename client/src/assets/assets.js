@@ -1,4 +1,4 @@
-import logo from './logo.svg'
+import logo from './ganeshaya-logo.png'
 import searchIcon from './searchIcon.svg'
 import userIcon from './userIcon.svg'
 import calenderIcon from './calenderIcon.svg'
@@ -117,7 +117,7 @@ export const userDummyData = {
     "_id": "user_2unqyL4diJFP1E3pIBnasc7w8hP",
     "username": "Beast Holsambre",
     "email": "user.beast18@gmail.com",
-    "image": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvdXBsb2FkZWQvaW1nXzJ2N2c5YVpSSEFVYVUxbmVYZ2JkSVVuWnFzWSJ9",
+    "image": assets.userIcon,
     "role": "hotelOwner",
     "createdAt": "2025-03-25T09:29:16.367Z",
     "updatedAt": "2025-04-10T06:34:48.719Z",

@@ -14,3 +14,73 @@
 .font-playfair{
     font-family: Playfair !important;
 }
+
+.auth-page {
+    background: #f8fafb;
+}
+
+.auth-floral {
+    background-color: #fdfcf9;
+    background-image:
+        radial-gradient(circle at 90% 8%, rgba(232, 185, 89, .2) 0 20px, transparent 21px),
+        radial-gradient(circle at 96% 14%, rgba(229, 167, 94, .13) 0 34px, transparent 35px),
+        radial-gradient(circle at 5% 86%, rgba(232, 185, 89, .12) 0 25px, transparent 26px),
+        radial-gradient(circle at 12% 94%, rgba(229, 167, 94, .10) 0 40px, transparent 41px);
+}
+
+.auth-input {
+    display: flex;
+    height: 2.9rem;
+    align-items: center;
+    gap: .65rem;
+    border: 1px solid #bdc9d0;
+    border-radius: .45rem;
+    padding: 0 .75rem;
+    color: #60717d;
+    background: #fbfcfc;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.auth-input:focus-within {
+    border-color: #0d6671;
+    box-shadow: 0 0 0 3px rgba(13, 102, 113, .12);
+}
+
+.auth-input input {
+    min-width: 0;
+    height: 100%;
+    flex: 1;
+    outline: none;
+    color: #173449;
+    background: transparent;
+    font-size: .875rem;
+}
+
+.auth-input input::placeholder {
+    color: #8b98a1;
+}
+
+.auth-input button {
+    padding: .25rem;
+    color: #60717d;
+}
+
+.google-login-wrap {
+    overflow: hidden;
+    height: 2.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: .5rem;
+}
+
+.google-login-wrap > div {
+    display: flex !important;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 1023px) {
+    .auth-floral [aria-label="Ganeshaya Stays home"] > span:last-child.text-white {
+        color: #082d4f;
+    }
+}

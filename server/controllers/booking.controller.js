@@ -47,7 +47,7 @@ export const createBooking = async (req,res) => {
             return res.status(400).json({message: "Room is not available"});
         }
         //  Get totalPrice from Room
-        const roomData = await Room.findbyid(room).populate("hotel")
+        const roomData = await Room.findById(room).populate("hotel")
         let totalPrice = roomData.pricePerNight;
 
 
@@ -81,7 +81,7 @@ export const getBookingsByUser = async (req,res) => {
 
 export const getHotelBookings = async (req,res) => {
     try {
-     const hotel = Hotel.findOne({owner : req.auth.userId})
+     const hotel = await Hotel.findOne({owner : req.user._id})
      if (!hotel){
         return res.status(404).json({message : "Hotel not found"});
      }
