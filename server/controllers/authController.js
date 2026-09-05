@@ -133,6 +133,7 @@ export const signin = async (req, res) => {
                 fullname: user.fullname,
                 email: user.email,
                 profilePicture: user.profilePicture,
+                role: user.role,
                 providers: user.providers.map((p) => p.provider),
             },
         });
@@ -405,6 +406,7 @@ export const googleLogin = async (req, res) => {
                 fullname: user.fullname,
                 email: user.email,
                 profilePicture: user.profilePicture,
+                role: user.role,
                 providers: user.providers.map((p) => p.provider),
             },
         });

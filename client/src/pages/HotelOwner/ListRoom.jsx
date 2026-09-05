@@ -1,11 +1,54 @@
 import React from 'react'
 import Title from '../../components/Title'
-import {roomsDummyData} from '../../assets/assets'
-import { useState } from 'react'
+import { useState , useEffect } from 'react'
+import { useApp } from '../../context/AppContext.jsx'
+import toast from 'react-hot-toast'
+import api from '../../lib/api'
 
 const ListRoom = () => {
 
-  const [rooms , setRooms] = useState(roomsDummyData)
+  const [rooms , setRooms] = useState([])
+  const { user, loading } = useApp()
+
+  // Fetch Rooms of the Hotel Onwer
+  const fetchRooms = async () => {
+    try{
+      const response = await api.get('/rooms/owner')
+      const data = response.data
+      if(data.success){
+        setRooms(data.rooms)
+      }else{
+        toast.error(data.message)
+      }
+    }catch(error){
+      toast.error(error.message)
+    }
+  }
+
+  // Toggle Availability of the Room
+  const toggleAvailability = async (roomId) => {
+    try {
+      const response = await api.post('/rooms/toggle-availability', { roomId })
+      const data = response.data
+      if (data.success) {
+        toast.success(data.message)
+        setRooms((currentRooms) => currentRooms.map((room) =>
+          room._id === roomId ? { ...room, isAvailable: data.roomData.isAvailable } : room
+        ))
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Unable to update room availability.')
+    }
+  }
+
+useEffect(()=>{
+    if (!loading && user) {
+      fetchRooms()
+    }
+},[loading, user])
+
   return (
     <div className='ml-10 mt-10'>
       <Title  align='left' font='outfit' title='Room Listings' subTitle='View, edit, and manage your rooms. Keep the information up-to-date to provide the best experience for your guests.'/>
@@ -14,26 +57,24 @@ const ListRoom = () => {
         <table className='w-full'>
       <thead className='bg-gray-50'>
         <tr>
-          <th clasName ='py-3 px-4 text-gray-800 font-medium'>Name</th>
-          <th clasName ='py-3 px-4 text-gray-800 font-medium max-sm-hidden'>Facility</th>
-          <th clasName ='py-3 px-4 text-gray-800 font-medium'>Price / night</th>
-          <th clasName ='py-3 px-4 text-gray-800 font-medium text-center'>Actions</th>
+          <th className ='py-3 px-4 text-gray-800 font-medium'>Name</th>
+          <th className ='py-3 px-4 text-gray-800 font-medium max-sm-hidden'>Facility</th>
+          <th className ='py-3 px-4 text-gray-800 font-medium'>Price / night</th>
+          <th className ='py-3 px-4 text-gray-800 font-medium text-center'>Actions</th>
         </tr>
       </thead>
       <tbody className ='text-sm'>
         {rooms.map((item,index)=>(
-          <tr key={index}>
+          <tr key={item._id}>
             <td className='py-3 px-4 text-gray-700 border-t border-gray-300'>{item.roomType}</td>
             <td className='py-3 px-4 text-gray-700 max-sm-hidden'>{item.amenities.join(', ')}</td>
             <td className='py-3 px-4 text-gray-700'>${item.pricePerNight}</td>
-            <td className='py-3 px-4 text-gray-700 text-center'>
-              <td className='border-t border-gray-300 text-red-500 text-center py-3 px-4'>
-                <label className='relative inline-flex items-center cursor-pointer text-gray-900 gap-3'>
-                  <input type="checkbox" value="" className="sr-only peer" checked={item.isAvailable} />
-                  <div className='w-12 h-7 bg-slate-300 rounded-full peer peer-checked:bg-blue-600 transition-colors duration-200'></div>
-                  <span className=' dot absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5 '></span>
-                </label>
-              </td>
+            <td className='border-t border-gray-300 text-red-500 text-center py-3 px-4'>
+              <label className='relative inline-flex items-center cursor-pointer text-gray-900 gap-3'>
+                <input onChange={() => toggleAvailability(item._id)} type="checkbox" className="sr-only peer" checked={item.isAvailable} />
+                <div className='w-12 h-7 bg-slate-300 rounded-full peer peer-checked:bg-blue-600 transition-colors duration-200'></div>
+                <span className='dot absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5'></span>
+              </label>
             </td>
           </tr>
         ))}

@@ -2,6 +2,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { assets } from "../assets/assets";
 import { useAuth } from "../context/AuthContext";
+import { useApp } from "../context/AppContext";
+import HotelReg from "./HotelReg";
 
 const BookIcon = () => (
   <span className="text-sm">📖</span>
@@ -17,16 +19,22 @@ const Navbar = () => {
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
+  const { user, isOwner, showHotelReg, setShowHotelReg } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
 
-    setIsScrolled(location.pathname !== "/" || window.scrollY > 10);
+    const frameId = window.requestAnimationFrame(() => {
+      setIsScrolled(location.pathname !== "/" || window.scrollY > 10);
+    });
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, [location.pathname]);
 
   const handleLogout = async () => {
@@ -59,7 +67,7 @@ const Navbar = () => {
           className={`rounded-xl p-1.5 transition-all duration-500 ${
             isScrolled
               ? "h-14 bg-white shadow-sm"
-              : "h-[4.5rem] border border-white/55 bg-white/80 shadow-lg shadow-slate-950/15 backdrop-blur-md"
+              : "h-18 border border-white/55 bg-white/80 shadow-lg shadow-slate-950/15 backdrop-blur-md"
           }`}
         />
       </Link>
@@ -84,12 +92,12 @@ const Navbar = () => {
 
         {user && (
           <button
-            onClick={() => navigate("/owner")}
+            onClick={() => isOwner ? navigate("/owner") : setShowHotelReg(true)}
             className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
               isScrolled ? "text-black" : "text-white"
             }`}
           >
-            Dashboard
+            {isOwner ? "Dashboard" : "List Your Hotel"}
           </button>
         )}
       </div>
@@ -176,7 +184,16 @@ const Navbar = () => {
         {user ? (
           <>
             <button onClick={() => goTo("/my-bookings")}>My Bookings</button>
-            <button onClick={() => goTo("/owner")}>Dashboard</button>
+            {isOwner ? (
+              <button onClick={() => goTo("/owner")}>Dashboard</button>
+            ) : (
+              <button onClick={() => {
+                setIsMenuOpen(false);
+                setShowHotelReg(true);
+              }}>
+                List Your Hotel
+              </button>
+            )}
             <button onClick={handleLogout} className="text-red-500">
               Logout
             </button>
@@ -190,6 +207,10 @@ const Navbar = () => {
           </button>
         )}
       </div>
+
+      {showHotelReg && (
+        <HotelReg onClose={() => setShowHotelReg(false)} />
+      )}
     </nav>
   );
 };

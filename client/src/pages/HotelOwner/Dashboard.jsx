@@ -1,8 +1,46 @@
 import React from 'react'
-import { assets, dashboardDummyData } from '../../assets/assets'
+import { assets} from '../../assets/assets'
+import { useState, useEffect } from 'react'
+import { useApp } from '../../context/AppContext.jsx'
+import api from '../../lib/api'
+import toast from 'react-hot-toast'
 
 const Dashboard = () => {
-  const { totalBookings, totalRevenue, bookings } = dashboardDummyData
+
+  const { user } = useApp()
+  const [dashboardData, setDashboardData] = useState({
+    totalBookings: 0,
+    totalRevenue: 0,
+    bookings: [],
+  })
+
+  const fetchDashboardData = async () => {
+    try {
+      const response = await api.get('bookings/hotel');
+      const data = response.data;
+      if (data.success) {
+        const dashboard = data.dashboardData;
+        setDashboardData({
+          totalBookings: dashboard.totalBookings,
+          totalRevenue: dashboard.totalRevenue,
+          bookings: dashboard.bookings || [],
+        });
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Unable to fetch dashboard data.');
+    }
+  };
+
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
+
+  const { totalBookings, totalRevenue, bookings } = dashboardData;
 
   const stats = [
     {

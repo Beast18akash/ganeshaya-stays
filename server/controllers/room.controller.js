@@ -1,7 +1,7 @@
 //  Api to create a new room for a hotel
 import Room from "../models/room.js";
 import Hotel from "../models/hotel.js";
-import cloudinary from 'cloudinary';
+import { v2 as cloudinary } from "cloudinary";
 
 export const createRoom = async (req, res) => {
     try {
@@ -10,6 +10,15 @@ export const createRoom = async (req, res) => {
         if (!hotel) {
             return res.status(404).json({ message: "Hotel not found" });
         }
+
+        if (!req.files?.length) {
+            return res.status(400).json({ success: false, message: "At least one room image is required" });
+        }
+
+        if (!roomType || !pricePerNight || !amenities) {
+            return res.status(400).json({ success: false, message: "Room type, price, and amenities are required" });
+        }
+
         // Upload images to Cloudinary
         const uploadImages = req.files.map(async (file) => {
             const response = await cloudinary.uploader.upload(file.path);
@@ -20,10 +29,17 @@ export const createRoom = async (req, res) => {
         //  wait for all images to be uploaded
         const images = await Promise.all(uploadImages);
 
-        const room = await Room.create({ hotel, roomType, pricePerNight: +pricePerNight, amenities: JSON.parse(amenities), images });
+        const room = await Room.create({ hotel: hotel._id, roomType, pricePerNight: +pricePerNight, amenities: JSON.parse(amenities), images });
         res.status(201).json({ success: true, message: "Room created successfully", });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error("Room creation failed:", error);
+        const isCloudinaryUploadError = error.http_code === 403;
+        res.status(isCloudinaryUploadError ? 503 : 500).json({
+            success: false,
+            message: isCloudinaryUploadError
+            ? "Cloudinary rejected the image upload because this API key is missing the create permission. Generate an API key with upload/create permissions, update the server .env, and restart the server."
+                : error.message,
+        });
     }
 }
 

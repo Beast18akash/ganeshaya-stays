@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Title from '../../components/Title'
 import { assets } from '../../assets/assets'
+import api from '../../lib/api'
+import toast from 'react-hot-toast'
 
 const AddRoom = () => {
 
@@ -12,9 +14,9 @@ const AddRoom = () => {
   })
 
   const [inputs,setInputs] = useState({
-    roomType: " ",
-    pricePernight : 0,
-    ameneties : {
+    roomType: "",
+    pricePerNight : 0,
+    amenities : {
       'Free WiFi' : false,
       'Free Breakfast' : false,
       'Free Service' : false,
@@ -22,8 +24,47 @@ const AddRoom = () => {
       'Pool Access' : false
     }
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setError('')
+
+    const selectedImages = Object.values(images).filter(Boolean)
+    if (!inputs.roomType || inputs.pricePerNight <= 0 || selectedImages.length === 0) {
+      setError('Please select a room type, enter a price, and upload at least one image.')
+      return
+    }
+
+    const formData = new FormData()
+    selectedImages.forEach((image) => formData.append('images', image))
+    formData.append('roomType', inputs.roomType)
+    formData.append('pricePerNight', String(inputs.pricePerNight))
+    formData.append('amenities', JSON.stringify(
+      Object.keys(inputs.amenities).filter((amenity) => inputs.amenities[amenity])
+    ))
+
+    setIsSubmitting(true)
+    try {
+      const response = await api.post('/rooms', formData)
+      setImages({ 1: null, 2: null, 3: null, 4: null })
+      setInputs({
+        roomType: '',
+        pricePerNight: 0,
+        amenities: Object.fromEntries(Object.keys(inputs.amenities).map((amenity) => [amenity, false]))
+      })
+      toast.success(response.data.message || 'Room created successfully.')
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || 'Unable to create the room.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
-   <form>
+    <>
+   <form onSubmit={handleSubmit}>
     <Title align='left' font='outfit' title='Add Room' subTitle="Fill in the details carefully and accurate room details, pricing , and amenities, to enhance thye user booking experience."/>
     {/* Upload Area for Images */}
     <p className='text-gray-800 mt-10'>Images</p>
@@ -50,24 +91,24 @@ const AddRoom = () => {
   </div>
   <div>
     <p className='text-gray-800 mt-4'>Price<span className="text-xs">/night</span></p>
-    <input type="number" placeholder='0' onChange={e=> setInputs({...inputs, pricePernight : Number(e.target.value)})} value={inputs.pricePernight} className='border opacity-70 border-gray-300 mt-1 rounded p-2 w-full'/>
+    <input type="number" min="1" placeholder='0' onChange={e=> setInputs({...inputs, pricePerNight : Number(e.target.value)})} value={inputs.pricePerNight} className='border opacity-70 border-gray-300 mt-1 rounded p-2 w-full'/>
   </div>
 
     </div>
     <p className='text-gray-800 mt-4'>Amenities</p>
     <div className = 'flex flex-col flex-wrap mt-1 text-gray-400 max-w-sm'>
-      {Object.keys(inputs.ameneties).map((amenity , index)=>(
+      {Object.keys(inputs.amenities).map((amenity , index)=>(
         <div key={index} className='flex items-center gap-2 mt-2'>
           <input
             type="checkbox"
             id={`amenity${index}`}
-            checked={inputs.ameneties[amenity]}
-            onChange={e =>
+            checked={inputs.amenities[amenity]}
+            onChange={() =>
               setInputs({
                 ...inputs,
-                ameneties: {
-                  ...inputs.ameneties,
-                  [amenity]: !inputs.ameneties[amenity]
+                amenities: {
+                  ...inputs.amenities,
+                  [amenity]: !inputs.amenities[amenity]
                 }
               })
             }
@@ -75,10 +116,14 @@ const AddRoom = () => {
           <label htmlFor={`amenity${index}`}>{amenity}</label>
         </div>
       ))}
-      <button className='bg-primary text-white px-8 py-2 rounded mt-8 cursor-pointer'>Add Room</button>
+      {error && <p className='mt-4 text-sm text-red-500'>{error}</p>}
+      <button type='submit' disabled={isSubmitting} className='bg-primary text-white px-8 py-2 rounded mt-8 cursor-pointer disabled:opacity-60'>
+        {isSubmitting ? 'Creating Room...' : 'Add Room'}
+      </button>
 
     </div>
    </form>
+     </>
   )
 }
 
