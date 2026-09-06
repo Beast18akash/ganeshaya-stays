@@ -19,6 +19,7 @@ const Navbar = () => {
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { logout } = useAuth();
   const { user, isOwner, showHotelReg, setShowHotelReg } = useApp();
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ const Navbar = () => {
     try {
       await logout();
       setIsMenuOpen(false);
+      setIsUserMenuOpen(false);
       navigate("/");
     } catch {
       // Keep the UI usable even if the logout request fails.
@@ -49,6 +51,7 @@ const Navbar = () => {
 
   const goTo = (path) => {
     setIsMenuOpen(false);
+    setIsUserMenuOpen(false);
     navigate(path);
   };
 
@@ -110,17 +113,23 @@ const Navbar = () => {
         />
 
         {user ? (
-          <div className="relative group">
-            <button className="flex items-center gap-2 cursor-pointer">
+          <div className="relative">
+            <button
+              onClick={() => setIsUserMenuOpen((isOpen) => !isOpen)}
+              aria-expanded={isUserMenuOpen}
+              aria-label="Open user menu"
+              className="flex items-center gap-2 cursor-pointer"
+            >
               <img
                 src={user.profilePicture || assets.userIcon}
                 alt={user.fullname || "User"}
                 className="w-9 h-9 rounded-full object-cover border border-gray-200"
               />
             </button>
-            <div className="absolute right-0 top-10 hidden group-hover:block w-48 bg-white border border-gray-200 rounded-xl shadow-lg p-2 text-sm text-gray-700">
+            {isUserMenuOpen && (
+              <div className="absolute right-0 top-10 w-48 bg-white border border-gray-200 rounded-xl shadow-lg p-2 text-sm text-gray-700">
               <button
-                onClick={() => navigate("/my-bookings")}
+                onClick={() => goTo("/my-bookings")}
                 className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-left"
               >
                 <BookIcon /> My Bookings
@@ -131,7 +140,8 @@ const Navbar = () => {
               >
                 Logout
               </button>
-            </div>
+              </div>
+            )}
           </div>
         ) : (
           <button

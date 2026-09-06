@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { assets, cities } from '../assets/assets'
 import homeImage from '../assets/home.png'
@@ -16,9 +16,10 @@ const Hero = () => {
       alert('Check-out date must be after check-in date.')
       return
     }
-    // Navigate to rooms page with search params
+
+    const trimmedDestination = destination.trim()
     const params = new URLSearchParams()
-    if (destination) params.set('destination', destination)
+    if (trimmedDestination) params.set('destination', trimmedDestination)
     if (checkIn) params.set('checkIn', checkIn)
     if (checkOut) params.set('checkOut', checkOut)
     if (guests) params.set('guests', guests)
