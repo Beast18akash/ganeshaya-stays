@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../lib/api";
 import { useAuth } from "./AuthContext";
-import { roomsDummyData } from "../assets/assets";
 
 const AppContext = createContext(null);
 
@@ -18,13 +17,13 @@ export const AppProvider = ({ children }) => {
       const response = await api.get("/rooms");
       const data = response.data;
       if (data.success) {
-        setRooms(data.rooms?.length ? data.rooms : roomsDummyData);
+        setRooms(data.rooms || []);
       } else {
-        setRooms(roomsDummyData);
+        setRooms([]);
         toast.error(data.message);
       }
     } catch (error) {
-      setRooms(roomsDummyData);
+      setRooms([]);
       toast.error(error.response?.data?.message || "Unable to fetch rooms.");
     }
   };
