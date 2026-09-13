@@ -2,6 +2,8 @@ import express from "express";
 import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import connectDB from "./config/db.js";
 import userRouter from "./routes/user.Route.js";
 import hotelRouter from "./routes/hotel.Route.js";
@@ -11,6 +13,8 @@ import Bookingrouter from "./routes/booking.Routes.js";
 import authRouter from "./routes/authRoutes.js";
 
 const app = express();
+const serverDirectory = path.dirname(fileURLToPath(import.meta.url));
+const clientDistDirectory = path.resolve(serverDirectory, "../client/dist");
 
  await connectDB();
 connectCloudinary();
@@ -35,15 +39,16 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/", (req, res) => {
-  res.send("API is working!");
-});
-
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/hotels", hotelRouter);
 app.use("/api/rooms", roomRouter);
 app.use("/api/bookings", Bookingrouter);
+
+app.use(express.static(clientDistDirectory));
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(clientDistDirectory, "index.html"));
+});
 
 const PORT = process.env.PORT || 5000;
 
