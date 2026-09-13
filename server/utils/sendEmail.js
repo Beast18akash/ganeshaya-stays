@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import transporter from "../config/nodemailer.js";
 
 /**
  * Sends an email using Nodemailer.
@@ -10,25 +10,8 @@ import nodemailer from "nodemailer";
  * @returns {Promise<Object>} The info object from nodemailer.
  */
 export const sendEmail = async (options) => {
-    const transportConfig = {};
-
-    if (process.env.EMAIL_HOST) {
-        transportConfig.host = process.env.EMAIL_HOST;
-        transportConfig.port = parseInt(process.env.EMAIL_PORT || "2525", 10);
-        transportConfig.secure = transportConfig.port === 465;
-    } else {
-        transportConfig.service = process.env.EMAIL_SERVICE || "Gmail";
-    }
-
-    transportConfig.auth = {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    };
-
-    const transporter = nodemailer.createTransport(transportConfig);
-
     const mailOptions = {
-        from: `"MERN Auth Support" <${process.env.EMAIL_USER}>`,
+        from: `Ganeshaya Stays <${process.env.SENDER_EMAIL || process.env.SMTP_USER}>`,
         to: options.to,
         subject: options.subject,
         text: options.text,

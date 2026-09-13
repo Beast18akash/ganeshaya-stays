@@ -1,6 +1,7 @@
 import Booking from "../models/booking.js"
 import Hotel from "../models/hotel.js";
 import Room from "../models/room.js"
+import transporter from '../config/nodemailer.js'
 
 const validateBookingDates = (checkInDate, checkOutDate, guests) => {
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
@@ -110,7 +111,35 @@ export const createBooking = async (req,res) => {
         const nights = Math.ceil(diff / (1000*60*60*24));
         totalPrice = totalPrice * nights;
 
-        await Booking.create({user,room,hotel: roomData.hotel._id,guests : +guests,checkInDate, checkOutDate,totalPrice});
+        const booking = await Booking.create({
+            user,
+            room,
+            hotel: roomData.hotel._id,
+            guests: +guests,
+            checkInDate,
+            checkOutDate,
+            totalPrice,
+        });
+
+        const mailOptions = {
+            from: `Ganeshaya Stays <${process.env.SENDER_EMAIL || process.env.SMTP_USER}>`,
+            to: req.user.email,
+            subject: "Booking confirmation - Ganeshaya Stays",
+            text: `Hello ${req.user.fullname}, your booking at ${roomData.hotel.name} is confirmed.\n\nRoom: ${roomData.roomType}\nCheck-in: ${checkInDate}\nCheck-out: ${checkOutDate}\nGuests: ${guests}\nTotal price: ${totalPrice}`,
+            html: `
+                <h2>Booking confirmed</h2>
+                <p>Hello ${req.user.fullname},</p>
+                <p>Your booking at <strong>${roomData.hotel.name}</strong> has been confirmed.</p>
+                <p><strong>Room:</strong> ${roomData.roomType}<br>
+                <strong>Check-in:</strong> ${checkInDate}<br>
+                <strong>Check-out:</strong> ${checkOutDate}<br>
+                <strong>Guests:</strong> ${guests}<br>
+                <strong>Total price:</strong> ${totalPrice}</p>
+                <p>Booking ID: ${booking._id}</p>
+            `,
+        };
+
+        await transporter.sendMail(mailOptions);
         return res.status(201).json({success: true, message : "Booking Successfull"});
     } catch (error) {
         return res.status(500).json({success: false, message: error.message})

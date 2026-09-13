@@ -3,11 +3,11 @@ import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
-import userRouter from "./Routes/user.Route.js";
-import hotelRouter from "./Routes/hotel.Route.js";
-import roomRouter from "./Routes/roomRoute.js";
+import userRouter from "./routes/user.Route.js";
+import hotelRouter from "./routes/hotel.Route.js";
+import roomRouter from "./routes/roomRoute.js";
 import connectCloudinary from "./config/cloudinary.js";
-import Bookingrouter from "./Routes/booking.Routes.js";
+import Bookingrouter from "./routes/booking.Routes.js";
 import authRouter from "./routes/authRoutes.js";
 
 const app = express();
