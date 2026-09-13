@@ -1,0 +1,12 @@
+{
+  "name": "ganeshaya-stays",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail --names client,server --prefix-colors cyan,magenta \"npm run dev --prefix client\" \"npm run server --prefix server\"",
+    "client": "npm run dev --prefix client",
+    "server": "npm run server --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

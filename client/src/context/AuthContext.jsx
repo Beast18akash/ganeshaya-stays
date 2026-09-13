@@ -21,7 +21,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    refreshUser();
+    const timeoutId = setTimeout(() => {
+      void refreshUser();
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const signin = async (credentials) => {

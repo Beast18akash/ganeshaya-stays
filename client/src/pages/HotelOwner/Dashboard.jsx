@@ -1,4 +1,3 @@
-import React from 'react'
 import { assets} from '../../assets/assets'
 import { useState, useEffect } from 'react'
 import { useApp } from '../../context/AppContext.jsx'
@@ -36,7 +35,11 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-      fetchDashboardData();
+      const timeoutId = setTimeout(() => {
+        void fetchDashboardData();
+      }, 0);
+
+      return () => clearTimeout(timeoutId);
     }
   }, [user]);
 

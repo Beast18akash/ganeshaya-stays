@@ -9,8 +9,8 @@ export const AppProvider = ({ children }) => {
   const { user, loading } = useAuth();
   const [rooms, setRooms] = useState([]);
   const [searchedCities, setSearchedCities] = useState([]);
-  const [isOwner, setIsOwner] = useState(false);
   const [showHotelReg, setShowHotelReg] = useState(false);
+  const isOwner = user?.role === "hotelOwner";
 
   const fetchRooms = async () => {
     try {
@@ -29,12 +29,12 @@ export const AppProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchRooms();
-  }, []);
+    const timeoutId = setTimeout(() => {
+      void fetchRooms();
+    }, 0);
 
-  useEffect(() => {
-    setIsOwner(user?.role === "hotelOwner");
-  }, [user]);
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   return (
     <AppContext.Provider
@@ -46,7 +46,6 @@ export const AppProvider = ({ children }) => {
         searchedCities,
         setSearchedCities,
         isOwner,
-        setIsOwner,
         showHotelReg,
         setShowHotelReg,
       }}

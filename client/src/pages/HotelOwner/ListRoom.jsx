@@ -1,4 +1,3 @@
-import React from 'react'
 import Title from '../../components/Title'
 import { useState , useEffect } from 'react'
 import { useApp } from '../../context/AppContext.jsx'
@@ -45,7 +44,11 @@ const ListRoom = () => {
 
 useEffect(()=>{
     if (!loading && user) {
-      fetchRooms()
+      const timeoutId = setTimeout(() => {
+        void fetchRooms()
+      }, 0)
+
+      return () => clearTimeout(timeoutId)
     }
 },[loading, user])
 
@@ -64,7 +67,7 @@ useEffect(()=>{
         </tr>
       </thead>
       <tbody className ='text-sm'>
-        {rooms.map((item,index)=>(
+        {rooms.map((item)=>(
           <tr key={item._id}>
             <td className='py-3 px-4 text-gray-700 border-t border-gray-300'>{item.roomType}</td>
             <td className='py-3 px-4 text-gray-700 max-sm-hidden'>{item.amenities.join(', ')}</td>

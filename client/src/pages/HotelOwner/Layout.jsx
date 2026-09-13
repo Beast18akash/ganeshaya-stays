@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { assets } from '../../assets/assets'
 
@@ -9,13 +8,11 @@ const sidebarLinks = [
 ]
 
 const Layout = () => {
-  const [isOpen, setIsOpen] = useState(false)
-
   return (
     <div className='flex min-h-screen bg-gray-50'>
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 h-full z-40 bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ${isOpen ? 'w-56' : 'w-16'} md:w-56`}>
+      <aside className='fixed top-0 left-0 h-full z-40 bg-white border-r border-gray-200 flex flex-col w-16 md:w-56'>
 
         {/* Logo */}
         <div className='flex items-center gap-3 px-4 py-5 border-b border-gray-100'>

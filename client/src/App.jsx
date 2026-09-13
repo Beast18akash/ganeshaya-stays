@@ -17,11 +17,12 @@ import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
-  const isOwnerPath = useLocation().pathname.includes("owner");
-  const isAuthPath = useLocation().pathname.startsWith("/signin") ||
-    useLocation().pathname.startsWith("/signup") ||
-    useLocation().pathname.startsWith("/forgot-password") ||
-    useLocation().pathname.startsWith("/reset-password");
+  const { pathname } = useLocation();
+  const isOwnerPath = pathname.includes("owner");
+  const isAuthPath = pathname.startsWith("/signin") ||
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password");
 
   return (
     <div>

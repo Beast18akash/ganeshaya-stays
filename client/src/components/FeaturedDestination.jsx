@@ -1,4 +1,3 @@
-import React from 'react'
 import HotelCard from './HotelCard'
 import { useApp } from '../context/AppContext.jsx'
 import Title from './Title'

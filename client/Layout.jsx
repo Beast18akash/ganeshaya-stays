@@ -1,4 +1,3 @@
-import react from 'react'
 import Navbar from './src/components/hotelOnwer/Navbar'
 import Sidebar from './src/components/hotelOnwer/Sidebar'
 import { Outlet } from 'react-router-dom'
