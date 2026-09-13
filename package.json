@@ -2,7 +2,7 @@
   "name": "ganeshaya-stays",
   "private": true,
   "scripts": {
-    "build": "npm ci --prefix client && npm ci --prefix server && npm run build --prefix client",
+    "build": "npm ci --include=dev --prefix client && npm ci --include=dev --prefix server && npm run build --prefix client",
     "dev": "concurrently --kill-others-on-fail --names client,server --prefix-colors cyan,magenta \"npm run dev --prefix client\" \"npm run server --prefix server\"",
     "client": "npm run dev --prefix client",
     "server": "npm run server --prefix server",
