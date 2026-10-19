@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { assets, cities } from '../assets/assets'
-import homeImage from '../assets/home.png'
+import { assets, cities } from '../assets/uiAssets'
+import homeImage768 from '../assets/home-768.webp'
+import homeImage1600 from '../assets/home-1600.webp'
 
 const Hero = () => {
   const navigate = useNavigate()
@@ -28,10 +29,13 @@ const Hero = () => {
   }
 
   return (
-    <div
-      className='flex h-screen flex-col items-start justify-center bg-cover bg-center bg-no-repeat px-6 text-white md:px-16 lg:px-24 xl:px-32'
-      style={{ backgroundImage: `url(${homeImage})` }}
-    >
+    <div className='relative h-screen overflow-hidden text-white'>
+      <picture>
+        <source type='image/webp' srcSet={`${homeImage768} 768w, ${homeImage1600} 1600w`} sizes='100vw' />
+        <img src={homeImage1600} alt='' width='1600' height='901' fetchPriority='high' decoding='async' className='absolute inset-0 h-full w-full object-cover' />
+      </picture>
+      <div className='absolute inset-0 bg-black/20' />
+      <div className='relative flex h-full flex-col items-start justify-center px-6 md:px-16 lg:px-24 xl:px-32'>
       <p className='bg-[#49B9FF]/50 px-3.5 py-1 rounded-full mt-20'>The Ultimate Experience</p>
       <h1 className='font-playfair text-2xl md:text-5xl md:text-[56px] md:leading-14 font-bold md:font-extrabold max-w-xl mt-4'>Discover Your perfect Destination</h1>
       <p className='max-w-130 mt-2 text-sm md:text-base'>Unparalledled luxury and comfort await at the world's most exclusive hotels and resorts. Start your journey today.</p>
@@ -106,6 +110,7 @@ const Hero = () => {
         </button>
 
       </form>
+      </div>
     </div>
   )
 }

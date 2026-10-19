@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { assets } from '../../assets/assets'
+import { assets } from '../../assets/uiAssets'
 
 const sidebarLinks = [
   { name: 'Dashboard', path: '/owner', icon: assets.dashboardIcon },

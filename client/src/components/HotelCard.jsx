@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
-import { assets } from '../assets/assets'
+import { assets } from '../assets/uiAssets'
+import { getRoomImageSrcSet, getRoomImageUrl } from '../lib/images'
 
 const HotelCard = ({room,index}) => {
+  const image = room.images?.[0]
   return (
   <Link to={'/rooms/' + room._id} onClick={()=>scrollTo(0,0)} key ={room._id} className='relative max-w-70 w-full rounded-xl overflow-hidden bg-white text-gray-500/90 shadow-[0px_4px_4px_rgba(0,0,0,0.05)]'>
-    <img src = {room.images[0]} alt =""/>
+    <img src={getRoomImageUrl(image, { width: 640, height: 426 })} srcSet={getRoomImageSrcSet(image, [320, 480, 640], { height: 426 })} sizes="(min-width: 1024px) 280px, (min-width: 768px) 40vw, 100vw" width="640" height="426" loading="lazy" decoding="async" alt={`${room.hotel.name} ${room.roomType}`} className="aspect-[3/2] w-full object-cover" />
    { index %2 === 0 &&  <p className='px-3 py-1 absolute top-3 left-3 text-xs bg-white text-gray-800 font-medium rounded-full'>Best seller</p>}
     <div className='pt-5 p-4'>
         <div className='flex items-center justify-between'>

@@ -1,58 +1,37 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { assets, facilityIcons, roomCommonData } from '../assets/assets'
+import { assets, facilityIcons, roomCommonData } from '../assets/uiAssets'
 import StarRating from '../components/StarRating'
 import api from '../lib/api'
 import { useAuth } from '../context/AuthContext'
+import { useApp } from '../context/AppContext'
+import { getRoomImageSrcSet, getRoomImageUrl } from '../lib/images'
 
 const RoomDetails = () => {
   const {id} = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
-  const [room , setRoom] = useState(null)
-  const [mainImage , setMainImage] = useState(null)
+  const { rooms, roomsError, roomsStatus, loadRooms } = useApp()
+  const [selectedImage, setSelectedImage] = useState(null)
   const [checkInDate, setCheckInDate] = useState('')
   const [checkOutDate, setCheckOutDate] = useState('')
   const [guests, setGuests] = useState(1)
   const [availabilityChecked, setAvailabilityChecked] = useState(false)
   const [checkingAvailability, setCheckingAvailability] = useState(false)
   const [booking, setBooking] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const room = useMemo(
+    () => rooms.find((item) => String(item._id) === id) || null,
+    [id, rooms],
+  )
+  const loading = roomsStatus === 'idle' || roomsStatus === 'loading'
+  const error = roomsStatus === 'error' ? roomsError : ''
+  const mainImage = room?.images?.includes(selectedImage) ? selectedImage : room?.images?.[0] || null
 
-  useEffect(()=>{
-    let active = true
-
-    const fetchRoom = async () => {
-      try {
-        setLoading(true)
-        setError('')
-        const response = await api.get('/rooms')
-        const rooms = response.data?.rooms || []
-        const selectedRoom = rooms.find((item) => String(item._id) === id)
-
-        if (!selectedRoom) {
-          throw new Error('Room not found')
-        }
-
-        if (active) {
-          setRoom(selectedRoom)
-          setMainImage(selectedRoom.images?.[0] || null)
-        }
-      } catch (fetchError) {
-        if (active) {
-          setError(fetchError.response?.data?.message || fetchError.message || 'Unable to load room details.')
-        }
-      } finally {
-        if (active) setLoading(false)
-      }
-    }
-
-    fetchRoom()
-    return () => { active = false }
-  },[id])
+  useEffect(() => {
+    void loadRooms()
+  }, [loadRooms])
 
   const validateDates = () => {
     const today = new Date()
@@ -159,14 +138,14 @@ const RoomDetails = () => {
 {/* room images */}
 <div className='flex flex-col lg:flex-row gap-4 mt-6'>
   <div className='lg:w-1/2 w-full'>
-    <img src={mainImage} alt="Room Image" className='w-full rounded-xl shadow-lg object-cover'/>
+    <img src={getRoomImageUrl(mainImage, { width: 1200, height: 800 })} srcSet={getRoomImageSrcSet(mainImage, [640, 960, 1200], { height: 800 })} sizes="(min-width: 1024px) 50vw, 100vw" width="1200" height="800" fetchPriority="high" decoding="async" alt={`${room.hotel.name} ${room.roomType}`} className='aspect-[3/2] w-full rounded-xl object-cover shadow-lg'/>
   </div>
 
   <div className='grid grid-cols-2 gap-4 lg:w-1/2 w-full'>
     {room?.images.length > 1 && room.images.map((image, index) => (
-      <img src={image} key={index} alt="Room Image"
-        className={`w-full rounded-xl shadow-md object-cover cursor-pointer ${mainImage === image ? "outline-3 outline-orange-500" : ""}`}
-        onClick={() => setMainImage(image)}
+      <img src={getRoomImageUrl(image, { width: 560, height: 373 })} srcSet={getRoomImageSrcSet(image, [280, 560], { height: 373 })} sizes="(min-width: 1024px) 25vw, 50vw" width="560" height="373" loading="lazy" decoding="async" key={index} alt={`${room.hotel.name} gallery image ${index + 1}`}
+        className={`aspect-[3/2] w-full rounded-xl object-cover shadow-md cursor-pointer ${mainImage === image ? "outline-3 outline-orange-500" : ""}`}
+        onClick={() => setSelectedImage(image)}
       />
     ))}
   </div>

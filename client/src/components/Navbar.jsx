@@ -1,9 +1,10 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { assets } from "../assets/assets";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { assets } from "../assets/uiAssets";
 import { useAuth } from "../context/AuthContext";
 import { useApp } from "../context/AppContext";
-import HotelReg from "./HotelReg";
+
+const HotelReg = lazy(() => import("./HotelReg"));
 
 const BookIcon = () => (
   <span className="text-sm">📖</span>
@@ -219,7 +220,9 @@ const Navbar = () => {
       </div>
 
       {showHotelReg && (
-        <HotelReg onClose={() => setShowHotelReg(false)} />
+        <Suspense fallback={null}>
+          <HotelReg onClose={() => setShowHotelReg(false)} />
+        </Suspense>
       )}
     </nav>
   );

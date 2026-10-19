@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import Title from '../components/Title'
-import { assets } from '../assets/assets'
+import { assets } from '../assets/uiAssets'
 import api from '../lib/api'
+import { getRoomImageSrcSet, getRoomImageUrl } from '../lib/images'
 
 
 const MyBookings = () => {
@@ -68,7 +69,7 @@ const MyBookings = () => {
 
                         {/* Hotel Details */}
                         <div className='flex flex-col md:flex-row gap-3'>
-                            <img src={booking.room?.images?.[0] || assets.logo} alt={booking.hotel?.name || 'Booked room'} className='w-full md:w-44 h-40 md:h-auto rounded-lg shadow object-cover' />
+                            <img src={getRoomImageUrl(booking.room?.images?.[0], { width: 352, height: 240 }) || assets.logo} srcSet={getRoomImageSrcSet(booking.room?.images?.[0], [176, 352], { height: 240 })} sizes="(min-width: 768px) 176px, 100vw" width="352" height="240" loading="lazy" decoding="async" alt={booking.hotel?.name || 'Booked room'} className='h-40 w-full rounded-lg object-cover shadow md:h-auto md:w-44' />
                             <div className='flex flex-col justify-center gap-1.5'>
                                 <p className='font-playfair text-2xl'>
                                     {booking.hotel?.name || 'Hotel'}

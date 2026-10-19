@@ -2,20 +2,30 @@ import HotelCard from './HotelCard'
 import { useApp } from '../context/AppContext.jsx'
 import Title from './Title'
 import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
 const FeaturedDestination = () => {
-  const {rooms} = useApp()
+  const { rooms, roomsStatus, roomsError, loadRooms } = useApp()
 
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
-  return rooms.length > 0 && (
+  useEffect(() => {
+    void loadRooms()
+  }, [loadRooms])
+
+  if (roomsStatus === 'error') {
+    return <div className='flex flex-col items-center bg-slate-50 px-6 py-20 md:px-16 lg:px-24'><Title title='Featured Destination' subTitle='Discover our handpicked selection of exceptional properties around the world, offering unparalleled luxury and unforgettable experience.' /><p className='mt-10 text-sm text-gray-500'>{roomsError}</p></div>
+  }
+
+  return (
     <div className='flex flex-col items-center px-6 md:px-16 lg:px-24 bg-slate-50 py-20'>
         <Title title='Featured Destination' subTitle='Discover our handpicked selection of exceptional properties around the world, offering unparalleled luxury and unforgettable experience. '/>
-        <div className='flex flex-wrap items-center justify-center gap-6 mt-20'>
+        <div className='flex flex-wrap items-center justify-center gap-6 mt-20' aria-busy={roomsStatus === 'idle' || roomsStatus === 'loading'}>
+           {(roomsStatus === 'idle' || roomsStatus === 'loading') && Array.from({ length: 4 }, (_, index) => <div key={index} className='h-88 w-full max-w-70 animate-pulse rounded-xl bg-slate-200' />)}
            {rooms.slice(0,4).map((room,index)=>(<HotelCard key={room._id} room={room} index={index}/>))}
         </div>
 
-        <button className='my-16 px-4 py-2 text-sm font-medium border border-gray-300 rounded bg-white hover:bg-gray-50 transition-all cursor-pointer'  onClick={()=>{navigate('/rooms'); scrollTo(0,0)}}> View All Destination</button>
+        {rooms.length > 0 && <button className='my-16 px-4 py-2 text-sm font-medium border border-gray-300 rounded bg-white hover:bg-gray-50 transition-all cursor-pointer'  onClick={()=>{navigate('/rooms'); scrollTo(0,0)}}> View All Destination</button>}
 
     </div>
   )

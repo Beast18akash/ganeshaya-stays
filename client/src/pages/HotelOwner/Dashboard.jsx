@@ -1,4 +1,4 @@
-import { assets} from '../../assets/assets'
+import { assets } from '../../assets/uiAssets'
 import { useState, useEffect } from 'react'
 import { useApp } from '../../context/AppContext.jsx'
 import api from '../../lib/api'

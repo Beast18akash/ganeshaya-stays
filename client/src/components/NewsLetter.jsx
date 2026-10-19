@@ -1,4 +1,4 @@
-import { assets } from '../assets/assets'
+import { assets } from '../assets/uiAssets'
 import Title from './Title'
 
 const NewsLetter = () => {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Title from '../../components/Title'
-import { assets } from '../../assets/assets'
+import { assets } from '../../assets/uiAssets'
 import api from '../../lib/api'
 import toast from 'react-hot-toast'
 

@@ -21,7 +21,10 @@ export const createRoom = async (req, res) => {
 
         // Upload images to Cloudinary
         const uploadImages = req.files.map(async (file) => {
-            const response = await cloudinary.uploader.upload(file.path);
+            const response = await cloudinary.uploader.upload(file.path, {
+                folder: "ganeshaya-stays/rooms",
+                transformation: [{ width: 2000, height: 1400, crop: "limit" }],
+            });
             return response.secure_url;
 
         });
@@ -46,7 +49,15 @@ export const createRoom = async (req, res) => {
 //  Api to get all rooms for a hotel
 export const getRooms = async (req, res) => {
     try {
-        const rooms = await Room.find({ isAvailable: true }).populate({ path: 'hotel', populate: { path: 'owner', select: 'profilePicture fullname' } }).sort({ createdAt: -1 });
+        const rooms = await Room.find({ isAvailable: true })
+            .select("hotel roomType pricePerNight amenities images isAvailable createdAt")
+            .populate({
+                path: "hotel",
+                select: "name address city owner",
+                populate: { path: "owner", select: "profilePicture fullname" },
+            })
+            .sort({ createdAt: -1 })
+            .lean();
         res.status(200).json({ success: true, rooms });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

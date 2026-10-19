@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { assets, cities } from '../assets/assets'
+import { assets, cities } from '../assets/uiAssets'
+import regImage from "../assets/regImage-686.webp";
 import api from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
@@ -34,7 +35,7 @@ const HotelReg = ({ onClose }) => {
     return (
         <div className='fixed top-0 bottom-0 left-0 right-0 z-100 flex items-center justify-center bg-black/70'>
             <form onSubmit={handleSubmit} className='flex bg-white rounded-xl max-w-4xl max-md:mx-2'>
-                <img src={assets.regImage} alt="reg-image" className='w-1/2 rounded-xl hidden md:block' />
+                <img src={regImage} alt="reg-image" width="686" height="830" className='w-1/2 rounded-xl hidden md:block' />
 
                 <div className='relative flex flex-col items-center md:w-1/2 p-8 md:p-10'>
                     <button type='button' onClick={onClose} className='absolute top-4 right-4'>

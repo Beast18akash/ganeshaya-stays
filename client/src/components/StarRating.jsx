@@ -1,4 +1,4 @@
-import { assets } from '../assets/assets'
+import { assets } from '../assets/uiAssets'
 
 const StarRating = ({rating =4}) => {
   return (
