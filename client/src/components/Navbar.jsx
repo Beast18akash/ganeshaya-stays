@@ -68,6 +68,8 @@ const Navbar = () => {
         <img
           src={assets.logo}
           alt="Ganeshaya Stays"
+          width="480"
+          height="160"
           className={`rounded-xl p-1.5 transition-all duration-500 ${
             isScrolled
               ? "h-14 bg-white shadow-sm"

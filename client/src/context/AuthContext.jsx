@@ -1,11 +1,18 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import api from "../lib/api";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
+  const { pathname } = useLocation();
+  const isAuthRoute = pathname.startsWith("/signin") ||
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const sessionCheckStarted = useRef(false);
 
   const refreshUser = async () => {
     try {
@@ -21,16 +28,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    if (isAuthRoute || sessionCheckStarted.current) return undefined;
+
     const timeoutId = setTimeout(() => {
-      void refreshUser();
+      if (!sessionCheckStarted.current) {
+        sessionCheckStarted.current = true;
+        void refreshUser();
+      }
     }, 0);
 
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [isAuthRoute]);
 
   const signin = async (credentials) => {
     const response = await api.post("/auth/signin", credentials);
+    sessionCheckStarted.current = true;
     setUser(response.data.user);
+    setLoading(false);
     return response.data;
   };
 
@@ -41,7 +55,9 @@ export const AuthProvider = ({ children }) => {
 
   const googleSignin = async (idToken) => {
     const response = await api.post("/auth/google", { idToken });
+    sessionCheckStarted.current = true;
     setUser(response.data.user);
+    setLoading(false);
     return response.data;
   };
 
@@ -52,7 +68,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, signin, signup, googleSignin, logout, refreshUser }}
+      value={{ user, loading: isAuthRoute ? false : loading, signin, signup, googleSignin, logout, refreshUser }}
     >
       {children}
     </AuthContext.Provider>

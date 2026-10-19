@@ -14,7 +14,7 @@ const GoogleLoginComponent = (props) => GOOGLE_CLIENT_ID
 
 const Brand = () => (
   <Link to="/" className="inline-flex items-center gap-3" aria-label="Ganeshaya Stays home">
-    <img src={assets.logo} alt="Ganeshaya Stays" className="h-20 rounded-xl bg-white p-1.5 shadow-lg shadow-slate-950/20" />
+    <img src={assets.logo} alt="Ganeshaya Stays" width="480" height="160" className="h-20 rounded-xl bg-white p-1.5 shadow-lg shadow-slate-950/20" />
   </Link>
 );
 const MailIcon = () => <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></svg>;

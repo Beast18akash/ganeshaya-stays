@@ -6,7 +6,7 @@ import signupImage900 from "../assets/signup-900.webp";
 import signupImage1400 from "../assets/signup-1400.webp";
 import AuthVisual from "../components/AuthVisual";
 
-const Brand = () => <Link to="/" aria-label="Ganeshaya Stays home"><img src={assets.logo} alt="Ganeshaya Stays" className="h-20 rounded-xl bg-white p-1.5 shadow-lg shadow-slate-950/20" /></Link>;
+const Brand = () => <Link to="/" aria-label="Ganeshaya Stays home"><img src={assets.logo} alt="Ganeshaya Stays" width="480" height="160" fetchPriority="high" className="h-20 rounded-xl bg-white p-1.5 shadow-lg shadow-slate-950/20" /></Link>;
 const UserIcon = () => <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="8" r="3.5" /><path d="M4.5 20c.8-3.5 3.2-5.3 7.5-5.3s6.7 1.8 7.5 5.3" /></svg>;
 const MailIcon = () => <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></svg>;
 const LockIcon = () => <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>;

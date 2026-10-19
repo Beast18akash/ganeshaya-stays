@@ -63,6 +63,14 @@
     color: #60717d;
 }
 
+.auth-page form:has(input[autocomplete="name"]) > button:last-child {
+    background-color: #08747e;
+}
+
+.auth-page form:has(input[autocomplete="name"]) > button:last-child:hover {
+    background-color: #066c75;
+}
+
 .google-login-wrap {
     overflow: hidden;
     height: 2.75rem;
