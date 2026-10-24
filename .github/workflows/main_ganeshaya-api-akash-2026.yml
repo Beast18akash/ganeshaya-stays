@@ -1,4 +1,3 @@
-```yaml
 name: Build and deploy Ganeshaya Stays Backend to Azure
 
 on:
@@ -72,4 +71,3 @@ jobs:
           app-name: ganeshaya-api-akash-2026
           slot-name: Production
           package: .
-```
