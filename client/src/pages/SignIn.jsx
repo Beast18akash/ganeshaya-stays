@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { GoogleLogin as GoogleOAuthLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext";
-import { assets } from "../assets/uiAssets";
+import ganeshayaLogoLight from "../assets/ganeshaya-logo-light.svg";
 import signInImage900 from "../assets/signIn-900.webp";
 import signInImage1400 from "../assets/signIn-1400.webp";
 import AuthVisual from "../components/AuthVisual";
@@ -13,8 +13,26 @@ const GoogleLoginComponent = (props) => GOOGLE_CLIENT_ID
   : <button type="button" disabled className="flex h-11 w-full items-center justify-center rounded-lg border border-slate-200 text-sm font-semibold text-slate-400">Google unavailable</button>;
 
 const Brand = () => (
-  <Link to="/" className="inline-flex items-center gap-3" aria-label="Ganeshaya Stays home">
-    <img src={assets.logo} alt="Ganeshaya Stays" width="480" height="160" className="h-20 rounded-xl bg-white p-1.5 shadow-lg shadow-slate-950/20" />
+  <Link
+    to="/"
+    aria-label="Ganeshaya Stays — home"
+    className="inline-flex items-center transition-opacity duration-300 hover:opacity-80"
+  >
+    {/*
+      Light SVG variant: GANESHAYA text is warm ivory (#F5F0E8) so it reads
+      clearly against the bright Mediterranean background. The Ganesha badge,
+      gold detailing, and STAYS typography are identical to the original logo.
+      The SVG has a transparent background — no white container needed.
+      A single subtle drop-shadow adds a touch of depth without visual noise.
+    */}
+    <img
+      src={ganeshayaLogoLight}
+      alt="Ganeshaya Stays — Luxury Hotels & Suites"
+      width="550"
+      height="140"
+      className="h-auto w-[220px] xl:w-[260px]
+        [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.22))]"
+    />
   </Link>
 );
 const MailIcon = () => <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></svg>;

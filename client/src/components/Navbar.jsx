@@ -61,20 +61,33 @@ const Navbar = () => {
       className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${
         isScrolled
           ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4"
-          : "py-4 md:py-6"
+          : "py-3 md:py-5"
       }`}
     >
-      <Link to="/">
+      <Link
+        to="/"
+        aria-label="Ganeshaya Stays — home"
+        className="shrink-0 flex items-center transition-opacity duration-300 hover:opacity-80"
+      >
+        {/*
+          mix-blend-mode:multiply dissolves the white webp background so the
+          Ganesha illustration floats directly on any background colour.
+          On the dark hero, a warm drop-shadow lifts the navy lettering just
+          enough for readability — no glow, no outline, no artificial effects.
+          Against the white scrolled navbar, multiply is neutral and the
+          shadow disappears naturally (shadow colour ~= bg colour).
+        */}
         <img
           src={assets.logo}
-          alt="Ganeshaya Stays"
+          alt="Ganeshaya Stays — Luxury Hotels & Suites"
           width="480"
           height="160"
-          className={`rounded-xl p-1.5 transition-all duration-500 ${
-            isScrolled
-              ? "h-14 bg-white shadow-sm"
-              : "h-18 border border-white/55 bg-white/80 shadow-lg shadow-slate-950/15 backdrop-blur-md"
-          }`}
+          className={`h-auto mix-blend-multiply transition-all duration-500
+            w-[164px] sm:w-[196px] md:w-[236px] lg:w-[314px] xl:w-[330px]
+            ${isScrolled
+              ? ""
+              : "[filter:drop-shadow(0_1px_6px_rgba(255,248,220,0.50))_drop-shadow(0_1px_3px_rgba(0,0,0,0.18))]"
+            }`}
         />
       </Link>
 
