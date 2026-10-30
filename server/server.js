@@ -45,6 +45,17 @@ app.use("/api/hotels", hotelRouter);
 app.use("/api/rooms", roomRouter);
 app.use("/api/bookings", Bookingrouter);
 
+// Root health-check endpoint — returns API status for Azure App Service
+// and any direct browser/monitoring requests to the base URL.
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Welcome to Ganeshaya Stays API",
+    status: "Running",
+    version: "1.0.0",
+  });
+});
+
 app.use(express.static(clientDistDirectory));
 app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(clientDistDirectory, "index.html"));
