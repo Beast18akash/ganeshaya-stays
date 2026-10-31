@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import { verifyToken } from "../utils/jwt.js";
 
@@ -20,9 +22,36 @@ export const protect = async (req, res, next) => {
     });
   }
 
+  let decoded;
   try {
-    const decoded = verifyToken(token);
-    const user = await User.findById(decoded.id);
+    decoded = verifyToken(token);
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired authentication token.",
+      });
+    }
+
+    return next(error);
+  }
+
+  if (
+    !decoded ||
+    typeof decoded !== "object" ||
+    typeof decoded.id !== "string" ||
+    !mongoose.isValidObjectId(decoded.id)
+  ) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired authentication token.",
+    });
+  }
+
+  try {
+    const user = await User.findById(decoded.id).select(
+      "-password -resetPasswordToken -resetPasswordExpires"
+    );
 
     if (!user) {
       return res.status(401).json({
@@ -32,11 +61,8 @@ export const protect = async (req, res, next) => {
     }
 
     req.user = user;
-    next();
+    return next();
   } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired authentication token.",
-    });
+    return next(error);
   }
 };
