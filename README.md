@@ -1,5 +1,5 @@
 <div align="center">
-# Ganeshaya Stays
+ Ganeshaya Stays
  
 **A full-stack hotel booking platform with secure multi-provider authentication, real-time availability checks, and a dedicated dashboard for hotel owners.**
  
