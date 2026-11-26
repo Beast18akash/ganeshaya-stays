@@ -72,12 +72,15 @@
 }
 
 .google-login-wrap {
-    overflow: hidden;
+    width: 100%;
+    min-width: 0;
     height: 2.75rem;
 }
 
 .google-login-wrap > div {
     display: flex !important;
+    width: 100%;
+    min-width: 0;
     height: 100%;
     align-items: center;
     justify-content: center;
