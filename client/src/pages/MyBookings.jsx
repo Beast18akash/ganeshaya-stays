@@ -10,12 +10,8 @@ const MyBookings = () => {
     const [bookings, setBookings] = useState([])
     const [loading, setLoading] = useState(true)
     const [payingBookingId, setPayingBookingId] = useState(null)
-    // Holds a Stripe Checkout URL; set via state so React controls the
-    // redirect timing — avoids mutating window.location inside an async handler.
     const [stripeRedirectUrl, setStripeRedirectUrl] = useState(null)
 
-    // Perform the Stripe redirect as a side-effect once a URL is ready.
-    // The empty dependency array means this only re-runs when stripeRedirectUrl changes.
     useEffect(() => {
         if (stripeRedirectUrl) {
             window.location.href = stripeRedirectUrl
@@ -67,8 +63,12 @@ const MyBookings = () => {
             const response = await api.post('/payments/reactivate-session', {
                 bookingId: booking._id,
             })
-            // Trigger the redirect via state; the useEffect above handles it.
-            setStripeRedirectUrl(response.data.url)
+            const checkoutUrl = response.data?.url
+            if (typeof checkoutUrl !== 'string' || !checkoutUrl.trim()) {
+                toast.error('Unable to initiate payment. Please try again.')
+                return
+            }
+            setStripeRedirectUrl(checkoutUrl)
         } catch (err) {
             toast.error(err.response?.data?.message || 'Unable to initiate payment. Please try again.')
         } finally {
@@ -86,6 +86,13 @@ const MyBookings = () => {
         if (status === 'cancelled') return 'bg-red-50 text-red-600'
         if (status === 'confirmed') return 'bg-green-50 text-green-600'
         return 'bg-amber-50 text-amber-700'
+    }
+
+    const hasCheckInPassed = (checkInDate) => {
+        const checkIn = new Date(checkInDate)
+        if (Number.isNaN(checkIn.getTime())) return false
+
+        return checkIn.toISOString().slice(0, 10) < new Date().toISOString().slice(0, 10)
     }
 
     return (
@@ -146,7 +153,7 @@ const MyBookings = () => {
                         </div>
 
                         {/* Payment Status */}
-                        <div className='flex md:flex-col md:justify-center items-start gap-2 mt-4 md:mt-0'>
+                        <div className='flex flex-col md:justify-center items-start gap-2 mt-4 md:mt-0'>
                             <span className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${getStatusClasses(booking.status)}`}>
                                 {booking.status || 'pending'}
                             </span>
@@ -158,17 +165,20 @@ const MyBookings = () => {
                             </div>
                             {booking.paymentMethod === 'stripe' &&
                                 !booking.isPaid &&
-                                booking.paymentStatus !== 'paid' &&
-                                (booking.status !== 'cancelled' ||
-                                    ['expired', 'failed'].includes(booking.paymentStatus)) && (
-                                <button
-                                    onClick={() => handlePayNow(booking)}
-                                    disabled={payingBookingId === booking._id}
-                                    className='px-4 py-1.5 mt-4 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed'
-                                >
-                                    {payingBookingId === booking._id ? 'Redirecting...' : 'Pay Now'}
-                                </button>
-                            )}
+                                booking.status !== 'cancelled' &&
+                                (hasCheckInPassed(booking.checkInDate) ? (
+                                    <span className='mt-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-500'>
+                                        Expired
+                                    </span>
+                                ) : (
+                                    <button
+                                        onClick={() => handlePayNow(booking)}
+                                        disabled={payingBookingId === booking._id}
+                                        className='mt-2 rounded-full bg-primary px-4 py-2 text-xs font-medium text-white transition-all hover:bg-primary-dull disabled:cursor-not-allowed disabled:opacity-60'
+                                    >
+                                        {payingBookingId === booking._id ? 'Redirecting...' : 'Pay Now'}
+                                    </button>
+                                ))}
                         </div>
 
                     </div>
