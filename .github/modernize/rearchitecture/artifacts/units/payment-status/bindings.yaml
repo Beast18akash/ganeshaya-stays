@@ -1,0 +1,4 @@
+unit: payment-status
+bindings:
+  - {type: route-declaration, name: "payment status endpoints", source_loc: server/controllers/payment.controller.js:1077, target: "payment-status", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

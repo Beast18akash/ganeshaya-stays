@@ -11,6 +11,7 @@ import roomRouter from "./routes/roomRoute.js";
 import connectCloudinary from "./config/cloudinary.js";
 import Bookingrouter from "./routes/booking.Routes.js";
 import authRouter from "./routes/authRoutes.js";
+import paymentRouter from "./routes/payment.Routes.js";
 
 const app = express();
 const serverDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -36,6 +37,15 @@ app.use(
   })
 );
 
+// ── Stripe webhook — MUST be registered before express.json() ────────────────
+// Stripe signature verification requires the raw (unparsed) request body.
+// express.raw() captures it as a Buffer on this specific path only;
+// every other route continues to use express.json() for parsed JSON bodies.
+app.use(
+  "/api/payments/webhook",
+  express.raw({ type: "application/json" })
+);
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -48,6 +58,7 @@ app.use("/api/user", userRouter);
 app.use("/api/hotels", hotelRouter);
 app.use("/api/rooms", roomRouter);
 app.use("/api/bookings", Bookingrouter);
+app.use("/api/payments", paymentRouter);
 
 // Root health-check endpoint — returns API status for Azure App Service
 // and any direct browser/monitoring requests to the base URL.

@@ -1,0 +1,4 @@
+unit: frontend-auth
+bindings:
+  - {type: route-declaration, name: "authentication pages", source_loc: client/src/context/AuthContext.jsx:1, target: "frontend-auth", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

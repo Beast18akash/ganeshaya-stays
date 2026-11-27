@@ -1,0 +1,4 @@
+unit: auth-signin
+bindings:
+  - {type: route-declaration, name: "POST /api/auth/signin", source_loc: server/controllers/authController.js:92, target: "auth-signin", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

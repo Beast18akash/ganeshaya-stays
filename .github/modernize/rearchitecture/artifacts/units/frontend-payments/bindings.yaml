@@ -1,0 +1,4 @@
+unit: frontend-payments
+bindings:
+  - {type: route-declaration, name: "payment result pages", source_loc: client/src/pages/PaymentSuccess.jsx:1, target: "frontend-payments", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

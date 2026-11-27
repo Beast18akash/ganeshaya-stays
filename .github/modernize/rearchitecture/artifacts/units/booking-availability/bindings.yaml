@@ -1,0 +1,4 @@
+unit: booking-availability
+bindings:
+  - {type: route-declaration, name: "POST /api/bookings/check-availability", source_loc: server/controllers/booking.controller.js:45, target: "booking-availability", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

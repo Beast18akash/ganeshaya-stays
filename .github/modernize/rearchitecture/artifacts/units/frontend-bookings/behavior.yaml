@@ -1,0 +1,10 @@
+unit: frontend-bookings
+side_effects:
+  - {source_loc: client/src/pages/MyBookings.jsx:1, effect: "Handles /my-bookings and updates or reads application state as defined by the endpoint/page.", must_preserve: true}
+branches:
+  - {source_loc: client/src/pages/MyBookings.jsx:1, condition: "validation, authorization, or external-service outcome", behavior: "Returns the existing success, error, redirect, loading, or fallback outcome.", must_preserve: true}
+error_paths:
+  - {source_loc: client/src/pages/MyBookings.jsx:1, trigger: "invalid input, unauthorized access, missing record, or integration failure", outcome: "Returns the existing HTTP error response or user-visible error state.", contract: "Preserve current response shape and status behavior.", must_preserve: true}
+concurrency:
+  model: async
+  tx_boundary: {source_loc: client/src/pages/MyBookings.jsx:1, scope: "Preserve any currently scoped database transaction, lease, polling, or request lifecycle.", isolation: "not explicitly specified", must_preserve: true}

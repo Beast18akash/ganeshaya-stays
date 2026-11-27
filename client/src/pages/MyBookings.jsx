@@ -9,11 +9,26 @@ import { getRoomImageSrcSet, getRoomImageUrl } from '../lib/images'
 const MyBookings = () => {
     const [bookings, setBookings] = useState([])
     const [loading, setLoading] = useState(true)
+    const [payingBookingId, setPayingBookingId] = useState(null)
+    // Holds a Stripe Checkout URL; set via state so React controls the
+    // redirect timing — avoids mutating window.location inside an async handler.
+    const [stripeRedirectUrl, setStripeRedirectUrl] = useState(null)
+
+    // Perform the Stripe redirect as a side-effect once a URL is ready.
+    // The empty dependency array means this only re-runs when stripeRedirectUrl changes.
+    useEffect(() => {
+        if (stripeRedirectUrl) {
+            window.location.href = stripeRedirectUrl
+        }
+    }, [stripeRedirectUrl])
 
     useEffect(() => {
         let active = true
+        let fetching = false
 
         const fetchBookings = async () => {
+            if (!active || fetching) return
+            fetching = true
             try {
                 const response = await api.get('/bookings/user')
                 if (active) setBookings(response.data?.bookings || [])
@@ -22,13 +37,44 @@ const MyBookings = () => {
                     toast.error(error.response?.data?.message || 'Unable to load your bookings.')
                 }
             } finally {
+                fetching = false
                 if (active) setLoading(false)
             }
         }
 
+        const refreshWhenVisible = () => {
+            if (document.visibilityState === 'visible') {
+                void fetchBookings()
+            }
+        }
+
         fetchBookings()
-        return () => { active = false }
+        window.addEventListener('focus', fetchBookings)
+        document.addEventListener('visibilitychange', refreshWhenVisible)
+        return () => {
+            active = false
+            window.removeEventListener('focus', fetchBookings)
+            document.removeEventListener('visibilitychange', refreshWhenVisible)
+        }
     }, [])
+
+    const handlePayNow = async (booking) => {
+        try {
+            setPayingBookingId(booking._id)
+            // Use reactivate-session so we never create a second booking document.
+            // The backend reuses the existing session if still open, or creates a
+            // new Stripe session linked to the same booking record.
+            const response = await api.post('/payments/reactivate-session', {
+                bookingId: booking._id,
+            })
+            // Trigger the redirect via state; the useEffect above handles it.
+            setStripeRedirectUrl(response.data.url)
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Unable to initiate payment. Please try again.')
+        } finally {
+            setPayingBookingId(null)
+        }
+    }
 
     const formatDate = (date) => new Date(date).toLocaleDateString(undefined, {
         year: 'numeric',
@@ -110,7 +156,19 @@ const MyBookings = () => {
                                     {booking.isPaid ? "Paid" : "Unpaid"}
                                 </p>
                             </div>
-                            {!booking.isPaid  && ( <button className='px-4 py-1.5 mt-4 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all cursor-pointer'>Pay Now</button>)}
+                            {booking.paymentMethod === 'stripe' &&
+                                !booking.isPaid &&
+                                booking.paymentStatus !== 'paid' &&
+                                (booking.status !== 'cancelled' ||
+                                    ['expired', 'failed'].includes(booking.paymentStatus)) && (
+                                <button
+                                    onClick={() => handlePayNow(booking)}
+                                    disabled={payingBookingId === booking._id}
+                                    className='px-4 py-1.5 mt-4 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed'
+                                >
+                                    {payingBookingId === booking._id ? 'Redirecting...' : 'Pay Now'}
+                                </button>
+                            )}
                         </div>
 
                     </div>

@@ -1,0 +1,4 @@
+unit: payment-webhook
+bindings:
+  - {type: route-declaration, name: "POST /api/payments/webhook", source_loc: server/controllers/payment.controller.js:488, target: "payment-webhook", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

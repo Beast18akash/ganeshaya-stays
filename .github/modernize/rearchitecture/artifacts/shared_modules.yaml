@@ -1,0 +1,46 @@
+modules:
+  - name: auth-middleware
+    kind: filter
+    source_loc: server/middleware/auth.middleware.js
+    used_by_units: [auth-session, hotel-registration, room-owner-management, booking-create, booking-reads, payment-create, payment-status, payment-reactivation, user-profile]
+    fields: [{name: protect, type: "Express middleware"}]
+    god_class: false
+    split_candidate: false
+    migration_strategy: copy
+    notes: "Shared JWT cookie verification and req.user attachment."
+  - name: api-client
+    kind: config
+    source_loc: client/src/lib/api.js
+    used_by_units: [frontend-auth, frontend-discovery, frontend-bookings, frontend-owner, frontend-payments]
+    fields: [{name: api, type: "AxiosInstance"}]
+    god_class: false
+    split_candidate: false
+    migration_strategy: copy
+    notes: "Shared credentialed API boundary."
+  - name: inventory-service
+    kind: service
+    source_loc: server/services/inventory.service.js
+    used_by_units: [booking-availability, booking-create, payment-create, payment-webhook, payment-reactivation]
+    fields:
+      - {name: reserveInventory, type: "async function"}
+      - {name: confirmInventory, type: "async function"}
+      - {name: releaseInventory, type: "async function"}
+      - {name: reactivateInventory, type: "async function"}
+      - {name: getAvailability, type: "async function"}
+    god_class: true
+    split_candidate: true
+    migration_strategy: split
+    notes: "Combines nightly counter management, reservation lifecycle, Stripe lease handling, and read validation."
+  - name: cookie-jwt-session
+    kind: utility
+    source_loc: server/utils/cookie.js
+    used_by_units: [auth-signup, auth-signin, auth-session, auth-logout, auth-oauth]
+    fields:
+      - {name: setAuthCookie, type: "function"}
+      - {name: clearAuthCookie, type: "function"}
+      - {name: generateToken, type: "function"}
+      - {name: verifyToken, type: "function"}
+    god_class: false
+    split_candidate: false
+    migration_strategy: copy
+    notes: "Shared authentication session contract."

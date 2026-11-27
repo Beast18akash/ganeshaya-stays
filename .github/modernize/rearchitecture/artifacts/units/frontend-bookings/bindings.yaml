@@ -1,0 +1,4 @@
+unit: frontend-bookings
+bindings:
+  - {type: route-declaration, name: "/my-bookings", source_loc: client/src/pages/MyBookings.jsx:1, target: "frontend-bookings", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

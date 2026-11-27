@@ -1,0 +1,4 @@
+unit: auth-recovery
+bindings:
+  - {type: route-declaration, name: "password recovery endpoints", source_loc: server/controllers/authController.js:206, target: "auth-recovery", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

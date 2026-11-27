@@ -1,0 +1,4 @@
+unit: auth-session
+bindings:
+  - {type: route-declaration, name: "GET /api/auth/me", source_loc: server/middleware/auth.middleware.js:1, target: "auth-session", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

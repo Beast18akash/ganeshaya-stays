@@ -1,0 +1,4 @@
+unit: frontend-shell
+bindings:
+  - {type: route-declaration, name: "SPA root and route composition", source_loc: client/src/App.jsx:1, target: "frontend-shell", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

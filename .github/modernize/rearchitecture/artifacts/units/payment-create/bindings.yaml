@@ -1,0 +1,4 @@
+unit: payment-create
+bindings:
+  - {type: route-declaration, name: "POST /api/payments/create-checkout-session", source_loc: server/controllers/payment.controller.js:112, target: "payment-create", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

@@ -1,0 +1,4 @@
+unit: hotel-registration
+bindings:
+  - {type: route-declaration, name: "POST /api/hotels", source_loc: server/controllers/hotel.controller.js:1, target: "hotel-registration", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

@@ -1,0 +1,4 @@
+unit: frontend-owner
+bindings:
+  - {type: route-declaration, name: "hotel owner pages", source_loc: client/src/pages/HotelOwner/Layout.jsx:1, target: "frontend-owner", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

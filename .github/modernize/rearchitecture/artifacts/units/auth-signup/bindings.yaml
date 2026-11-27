@@ -1,0 +1,4 @@
+unit: auth-signup
+bindings:
+  - {type: route-declaration, name: "POST /api/auth/signup", source_loc: server/controllers/authController.js:22, target: "auth-signup", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

@@ -1,0 +1,4 @@
+unit: room-owner-management
+bindings:
+  - {type: route-declaration, name: "room owner endpoints", source_loc: server/controllers/room.controller.js:6, target: "room-owner-management", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

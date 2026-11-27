@@ -1,0 +1,41 @@
+flows:
+  - name: jwt-cookie-session
+    medium: cookie
+    key: token
+    writer: {unit: auth-signin, source_loc: server/controllers/authController.js:92}
+    reader: {unit: auth-session, source_loc: server/middleware/auth.middleware.js:1}
+    pairing: matched
+    must_preserve: true
+    must_confirm: null
+    verification_hint: "Sign in, reload a protected page, and confirm /api/auth/me returns the same user."
+    notes: "The HttpOnly cookie is sent by Axios with credentials enabled."
+  - name: jwt-cookie-oauth
+    medium: cookie
+    key: token
+    writer: {unit: auth-oauth, source_loc: server/controllers/authController.js:378}
+    reader: {unit: auth-session, source_loc: server/middleware/auth.middleware.js:1}
+    pairing: matched
+    must_preserve: true
+    must_confirm: null
+    verification_hint: "Complete Google or GitHub sign-in and call a protected endpoint."
+    notes: "OAuth providers prove identity; the application JWT remains the session token."
+  - name: stripe-payment-state
+    medium: database
+    key: booking.paymentStatus
+    writer: {unit: payment-webhook, source_loc: server/controllers/payment.controller.js:488}
+    reader: {unit: payment-status, source_loc: server/controllers/payment.controller.js:1077}
+    pairing: matched
+    must_preserve: true
+    must_confirm: null
+    verification_hint: "Deliver a Stripe completion/failure event and poll the booking status endpoint."
+    notes: "Webhook writes payment state; result pages read it."
+  - name: recent-searches
+    medium: database
+    key: User.recentSearchedCities
+    writer: {unit: user-search-history, source_loc: server/controllers/user.controller.js:1}
+    reader: {unit: user-profile, source_loc: server/controllers/user.controller.js:1}
+    pairing: dynamic-key
+    must_preserve: true
+    must_confirm: runtime
+    verification_hint: "Store a city, reload the profile/session context, and verify the search history is returned."
+    notes: "Field behavior is model-driven and should be confirmed against the complete user schema."

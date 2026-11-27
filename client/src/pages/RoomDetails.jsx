@@ -21,6 +21,17 @@ const RoomDetails = () => {
   const [availabilityChecked, setAvailabilityChecked] = useState(false)
   const [checkingAvailability, setCheckingAvailability] = useState(false)
   const [booking, setBooking] = useState(false)
+  // Holds the Stripe Checkout URL; setting it via state triggers the redirect
+  // effect below, which only runs when the value changes.
+  const [stripeRedirectUrl, setStripeRedirectUrl] = useState(null)
+
+  // Perform the Stripe redirect as a side-effect once a URL is ready.
+  // The dependency array [stripeRedirectUrl] prevents running on every render.
+  useEffect(() => {
+    if (stripeRedirectUrl) {
+      window.location.href = stripeRedirectUrl
+    }
+  }, [stripeRedirectUrl])
   const room = useMemo(
     () => rooms.find((item) => String(item._id) === id) || null,
     [id, rooms],
@@ -70,17 +81,19 @@ const RoomDetails = () => {
 
       try {
         setBooking(true)
-        const response = await api.post('/bookings/book', {
+        // Create a pending booking and get a Stripe Checkout URL.
+        // Price is always computed server-side from trusted DB data.
+        const response = await api.post('/payments/create-checkout-session', {
           room: room._id,
           guests: Number(guests),
           checkInDate,
           checkOutDate,
         })
-        toast.success(response.data?.message || 'Room booked successfully.')
-        navigate('/my-bookings')
+        // Trigger redirect via state; the useEffect above handles it.
+        setStripeRedirectUrl(response.data.url)
       } catch (bookingError) {
         setAvailabilityChecked(false)
-        toast.error(bookingError.response?.data?.message || 'Unable to book this room.')
+        toast.error(bookingError.response?.data?.message || 'Unable to initiate payment. Please try again.')
       } finally {
         setBooking(false)
       }
@@ -189,7 +202,7 @@ const RoomDetails = () => {
       <input type='number' id='guests' min={1} step={1} value={guests} onChange={(e) => { setGuests(e.target.value); setAvailabilityChecked(false) }} className='max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required/>
     </div>
   </div>
-  <button type='submit' disabled={checkingAvailability || booking} className='bg-primary hover:bg-primary-dull disabled:cursor-not-allowed disabled:opacity-60 active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-25 py-3 md:py-4 text-base cursor-pointer'>{checkingAvailability ? 'Checking...' : booking ? 'Booking...' : availabilityChecked ? 'Book Now' : 'Check Availability'}</button>
+  <button type='submit' disabled={checkingAvailability || booking} className='bg-primary hover:bg-primary-dull disabled:cursor-not-allowed disabled:opacity-60 active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-25 py-3 md:py-4 text-base cursor-pointer'>{checkingAvailability ? 'Checking...' : booking ? 'Redirecting...' : availabilityChecked ? 'Pay Now' : 'Check Availability'}</button>
 </form>
 
 {/* Common specifications */}

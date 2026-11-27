@@ -1,0 +1,4 @@
+unit: booking-reads
+bindings:
+  - {type: route-declaration, name: "booking read endpoints", source_loc: server/controllers/booking.controller.js:175, target: "booking-reads", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

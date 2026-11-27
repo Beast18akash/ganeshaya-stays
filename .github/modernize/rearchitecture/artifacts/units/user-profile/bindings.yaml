@@ -1,0 +1,4 @@
+unit: user-profile
+bindings:
+  - {type: route-declaration, name: "GET /api/user", source_loc: server/controllers/user.controller.js:1, target: "user-profile", must_appear_in_target: true, notes: "HTTP route or SPA route binding."}
+runtime_config: []

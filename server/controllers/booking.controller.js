@@ -2,6 +2,13 @@ import Booking from "../models/booking.js"
 import Hotel from "../models/hotel.js";
 import Room from "../models/room.js"
 import transporter from '../config/nodemailer.js'
+import {
+    checkBookingAvailability,
+    releaseRoomNights,
+    reserveRoomNights,
+    updateRoomNightLease,
+} from "../utils/bookingAvailability.js";
+import { randomUUID } from "node:crypto";
 
 const validateBookingDates = (checkInDate, checkOutDate, guests) => {
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
@@ -32,20 +39,6 @@ const validateBookingDates = (checkInDate, checkOutDate, guests) => {
 
 const toBookingDate = (date) => new Date(`${date}T00:00:00.000Z`);
 
-//  function to Check Availability of Room 
-const checkAvailability = async ({checkInDate , checkOutDate, room}) => {
-    const requestedCheckIn = toBookingDate(checkInDate);
-    const requestedCheckOut = toBookingDate(checkOutDate);
-    const bookings  = await Booking.find({
-        room,
-        checkInDate: { $lt: requestedCheckOut },
-        checkOutDate: { $gt: requestedCheckIn },
-        status: { $ne: "cancelled" },
-    });
-    return bookings.length === 0;
-}
-
-
 //  Api to check Availability of Room
 //  POST /api/bookings/check-availability
 
@@ -65,7 +58,7 @@ export const checkAvailabilityAPI = async(req,res) => {
             return res.json({success: true, isAvailable: false, message: "This room is currently unavailable."});
         }
 
-        const isAvailable = await checkAvailability({checkInDate , checkOutDate, room});
+        const isAvailable = await checkBookingAvailability({checkInDate , checkOutDate, room});
         return res.json({
             success: true,
             isAvailable,
@@ -96,7 +89,7 @@ export const createBooking = async (req,res) => {
             return res.status(400).json({success: false, message: "This room is currently unavailable."});
         }
 
-        const isAvailable = await checkAvailability({checkInDate , checkOutDate, room});
+        const isAvailable = await checkBookingAvailability({checkInDate , checkOutDate, room});
         if(!isAvailable){   
             return res.status(400).json({success: false, message: "Room is not available for those dates."});
         }
@@ -111,7 +104,7 @@ export const createBooking = async (req,res) => {
         const nights = Math.ceil(diff / (1000*60*60*24));
         totalPrice = totalPrice * nights;
 
-        const booking = await Booking.create({
+        const booking = new Booking({
             user,
             room,
             hotel: roomData.hotel._id,
@@ -121,25 +114,55 @@ export const createBooking = async (req,res) => {
             totalPrice,
         });
 
-        const mailOptions = {
-            from: `Ganeshaya Stays <${process.env.SENDER_EMAIL || process.env.SMTP_USER}>`,
-            to: req.user.email,
-            subject: "Booking confirmation - Ganeshaya Stays",
-            text: `Hello ${req.user.fullname}, your booking at ${roomData.hotel.name} is confirmed.\n\nRoom: ${roomData.roomType}\nCheck-in: ${checkInDate}\nCheck-out: ${checkOutDate}\nGuests: ${guests}\nTotal price: ${totalPrice}`,
-            html: `
-                <h2>Booking confirmed</h2>
-                <p>Hello ${req.user.fullname},</p>
-                <p>Your booking at <strong>${roomData.hotel.name}</strong> has been confirmed.</p>
-                <p><strong>Room:</strong> ${roomData.roomType}<br>
-                <strong>Check-in:</strong> ${checkInDate}<br>
-                <strong>Check-out:</strong> ${checkOutDate}<br>
-                <strong>Guests:</strong> ${guests}<br>
-                <strong>Total price:</strong> ${totalPrice}</p>
-                <p>Booking ID: ${booking._id}</p>
-            `,
-        };
+        const reservationToken = randomUUID();
+        const reserved = await reserveRoomNights({
+            room,
+            checkInDate,
+            checkOutDate,
+            bookingId: booking._id,
+            reservationToken,
+            leaseExpiresAt: new Date(Date.now() + 5 * 60 * 1000),
+        });
+        if (!reserved) {
+            return res.status(409).json({
+                success: false,
+                message: "Room is no longer available for those dates.",
+            });
+        }
 
-        await transporter.sendMail(mailOptions);
+        try {
+            await booking.save();
+        } catch (error) {
+            await releaseRoomNights(booking._id, { reservationToken });
+            throw error;
+        }
+        await updateRoomNightLease(booking._id, null);
+
+        // Only send the confirmation email immediately for pay-at-hotel bookings.
+        // Stripe bookings receive their confirmation email from the webhook
+        // (payment.controller.js → sendBookingConfirmationEmail) after the
+        // payment is verified — never before.
+        if (booking.paymentMethod === "pay At Hotel") {
+            const mailOptions = {
+                from: `Ganeshaya Stays <${process.env.SENDER_EMAIL || process.env.SMTP_USER}>`,
+                to: req.user.email,
+                subject: "Booking confirmation - Ganeshaya Stays",
+                text: `Hello ${req.user.fullname}, your booking at ${roomData.hotel.name} is confirmed.\n\nRoom: ${roomData.roomType}\nCheck-in: ${checkInDate}\nCheck-out: ${checkOutDate}\nGuests: ${guests}\nTotal price: ${totalPrice}`,
+                html: `
+                    <h2>Booking confirmed</h2>
+                    <p>Hello ${req.user.fullname},</p>
+                    <p>Your booking at <strong>${roomData.hotel.name}</strong> has been confirmed.</p>
+                    <p><strong>Room:</strong> ${roomData.roomType}<br>
+                    <strong>Check-in:</strong> ${checkInDate}<br>
+                    <strong>Check-out:</strong> ${checkOutDate}<br>
+                    <strong>Guests:</strong> ${guests}<br>
+                    <strong>Total price:</strong> ${totalPrice}</p>
+                    <p>Booking ID: ${booking._id}</p>
+                `,
+            };
+            await transporter.sendMail(mailOptions);
+        }
+
         return res.status(201).json({success: true, message : "Booking Successfull"});
     } catch (error) {
         return res.status(500).json({success: false, message: error.message})
