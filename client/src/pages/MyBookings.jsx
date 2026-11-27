@@ -9,14 +9,6 @@ import { getRoomImageSrcSet, getRoomImageUrl } from '../lib/images'
 const MyBookings = () => {
     const [bookings, setBookings] = useState([])
     const [loading, setLoading] = useState(true)
-    const [payingBookingId, setPayingBookingId] = useState(null)
-    const [stripeRedirectUrl, setStripeRedirectUrl] = useState(null)
-
-    useEffect(() => {
-        if (stripeRedirectUrl) {
-            window.location.href = stripeRedirectUrl
-        }
-    }, [stripeRedirectUrl])
 
     useEffect(() => {
         let active = true
@@ -54,28 +46,6 @@ const MyBookings = () => {
         }
     }, [])
 
-    const handlePayNow = async (booking) => {
-        try {
-            setPayingBookingId(booking._id)
-            // Use reactivate-session so we never create a second booking document.
-            // The backend reuses the existing session if still open, or creates a
-            // new Stripe session linked to the same booking record.
-            const response = await api.post('/payments/reactivate-session', {
-                bookingId: booking._id,
-            })
-            const checkoutUrl = response.data?.url
-            if (typeof checkoutUrl !== 'string' || !checkoutUrl.trim()) {
-                toast.error('Unable to initiate payment. Please try again.')
-                return
-            }
-            setStripeRedirectUrl(checkoutUrl)
-        } catch (err) {
-            toast.error(err.response?.data?.message || 'Unable to initiate payment. Please try again.')
-        } finally {
-            setPayingBookingId(null)
-        }
-    }
-
     const formatDate = (date) => new Date(date).toLocaleDateString(undefined, {
         year: 'numeric',
         month: 'short',
@@ -86,13 +56,6 @@ const MyBookings = () => {
         if (status === 'cancelled') return 'bg-red-50 text-red-600'
         if (status === 'confirmed') return 'bg-green-50 text-green-600'
         return 'bg-amber-50 text-amber-700'
-    }
-
-    const hasCheckInPassed = (checkInDate) => {
-        const checkIn = new Date(checkInDate)
-        if (Number.isNaN(checkIn.getTime())) return false
-
-        return checkIn.toISOString().slice(0, 10) < new Date().toISOString().slice(0, 10)
     }
 
     return (
@@ -153,7 +116,7 @@ const MyBookings = () => {
                         </div>
 
                         {/* Payment Status */}
-                        <div className='flex flex-col md:justify-center items-start gap-2 mt-4 md:mt-0'>
+                        <div className='flex md:flex-col md:justify-center items-start gap-2 mt-4 md:mt-0'>
                             <span className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${getStatusClasses(booking.status)}`}>
                                 {booking.status || 'pending'}
                             </span>
@@ -163,22 +126,6 @@ const MyBookings = () => {
                                     {booking.isPaid ? "Paid" : "Unpaid"}
                                 </p>
                             </div>
-                            {booking.paymentMethod === 'stripe' &&
-                                !booking.isPaid &&
-                                booking.status !== 'cancelled' &&
-                                (hasCheckInPassed(booking.checkInDate) ? (
-                                    <span className='mt-2 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-500'>
-                                        Expired
-                                    </span>
-                                ) : (
-                                    <button
-                                        onClick={() => handlePayNow(booking)}
-                                        disabled={payingBookingId === booking._id}
-                                        className='mt-2 rounded-full bg-primary px-4 py-2 text-xs font-medium text-white transition-all hover:bg-primary-dull disabled:cursor-not-allowed disabled:opacity-60'
-                                    >
-                                        {payingBookingId === booking._id ? 'Redirecting...' : 'Pay Now'}
-                                    </button>
-                                ))}
                         </div>
 
                     </div>
