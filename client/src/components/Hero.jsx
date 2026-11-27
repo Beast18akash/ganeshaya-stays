@@ -32,7 +32,7 @@ const Hero = () => {
     <div className='relative h-screen overflow-hidden text-white'>
       <picture>
         <source type='image/webp' srcSet={`${homeImage768} 768w, ${homeImage1600} 1600w`} sizes='100vw' />
-        <img src={homeImage1600} alt='' width='1600' height='901' fetchPriority='high' decoding='async' className='absolute inset-0 h-full w-full object-cover' />
+        <img src={homeImage1600} alt='' width='1600' height='901' loading='eager' fetchPriority='high' decoding='async' className='absolute inset-0 h-full w-full object-cover' />
       </picture>
       <div className='absolute inset-0 bg-black/20' />
       <div className='relative flex h-full flex-col items-start justify-center px-6 md:px-16 lg:px-24 xl:px-32'>

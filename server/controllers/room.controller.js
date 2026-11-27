@@ -58,6 +58,7 @@ export const getRooms = async (req, res) => {
             })
             .sort({ createdAt: -1 })
             .lean();
+        res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
         res.status(200).json({ success: true, rooms });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

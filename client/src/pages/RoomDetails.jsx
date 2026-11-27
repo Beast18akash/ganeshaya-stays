@@ -6,7 +6,7 @@ import StarRating from '../components/StarRating'
 import api from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 import { useApp } from '../context/AppContext'
-import { getRoomImageSrcSet, getRoomImageUrl } from '../lib/images'
+import { getRoomImageSrcSet, optimizeCloudinaryUrl } from '../lib/images'
 
 const RoomDetails = () => {
   const {id} = useParams()
@@ -25,8 +25,8 @@ const RoomDetails = () => {
     () => rooms.find((item) => String(item._id) === id) || null,
     [id, rooms],
   )
-  const loading = roomsStatus === 'idle' || roomsStatus === 'loading'
-  const error = roomsStatus === 'error' ? roomsError : ''
+  const loading = !room && (roomsStatus === 'idle' || roomsStatus === 'loading')
+  const error = roomsStatus === 'error' && !room ? roomsError : ''
   const mainImage = room?.images?.includes(selectedImage) ? selectedImage : room?.images?.[0] || null
 
   useEffect(() => {
@@ -138,12 +138,12 @@ const RoomDetails = () => {
 {/* room images */}
 <div className='flex flex-col lg:flex-row gap-4 mt-6'>
   <div className='lg:w-1/2 w-full'>
-    <img src={getRoomImageUrl(mainImage, { width: 1200, height: 800 })} srcSet={getRoomImageSrcSet(mainImage, [640, 960, 1200], { height: 800 })} sizes="(min-width: 1024px) 50vw, 100vw" width="1200" height="800" fetchPriority="high" decoding="async" alt={`${room.hotel.name} ${room.roomType}`} className='aspect-[3/2] w-full rounded-xl object-cover shadow-lg'/>
+    <img src={optimizeCloudinaryUrl(mainImage, 1400)} srcSet={getRoomImageSrcSet(mainImage, [700, 1000, 1400], { height: 933 })} sizes="(min-width: 1024px) 50vw, 100vw" width="1400" height="933" loading="eager" fetchPriority="high" decoding="async" alt={`${room.hotel.name} ${room.roomType}`} className='aspect-[3/2] w-full rounded-xl object-cover shadow-lg'/>
   </div>
 
   <div className='grid grid-cols-2 gap-4 lg:w-1/2 w-full'>
     {room?.images.length > 1 && room.images.map((image, index) => (
-      <img src={getRoomImageUrl(image, { width: 560, height: 373 })} srcSet={getRoomImageSrcSet(image, [280, 560], { height: 373 })} sizes="(min-width: 1024px) 25vw, 50vw" width="560" height="373" loading="lazy" decoding="async" key={index} alt={`${room.hotel.name} gallery image ${index + 1}`}
+      <img src={optimizeCloudinaryUrl(image, 800)} srcSet={getRoomImageSrcSet(image, [280, 560], { height: 373 })} sizes="(min-width: 1024px) 25vw, 50vw" width="560" height="373" loading="lazy" decoding="async" key={index} alt={`${room.hotel.name} gallery image ${index + 1}`}
         className={`aspect-[3/2] w-full rounded-xl object-cover shadow-md cursor-pointer ${mainImage === image ? "outline-3 outline-orange-500" : ""}`}
         onClick={() => setSelectedImage(image)}
       />

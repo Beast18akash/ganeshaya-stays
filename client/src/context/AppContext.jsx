@@ -3,16 +3,36 @@ import api from "../lib/api";
 import { useAuth } from "./AuthContext";
 
 const AppContext = createContext(null);
+const ROOMS_CACHE_KEY = "gs_rooms_cache";
+
+const readCachedRooms = () => {
+  try {
+    const cachedRooms = JSON.parse(sessionStorage.getItem(ROOMS_CACHE_KEY) || "null");
+    return Array.isArray(cachedRooms) ? cachedRooms : [];
+  } catch {
+    return [];
+  }
+};
+
+const writeCachedRooms = (nextRooms) => {
+  try {
+    sessionStorage.setItem(ROOMS_CACHE_KEY, JSON.stringify(nextRooms));
+  } catch {
+    // Storage can be unavailable or full; the in-memory response remains usable.
+  }
+};
 
 export const AppProvider = ({ children }) => {
   const { user, loading } = useAuth();
-  const [rooms, setRooms] = useState([]);
-  const [roomsStatus, setRoomsStatus] = useState("idle");
+  const [rooms, setRooms] = useState(readCachedRooms);
+  const [roomsStatus, setRoomsStatus] = useState(() => (
+    rooms.length ? "loading" : "idle"
+  ));
   const [roomsError, setRoomsError] = useState("");
   const [searchedCities, setSearchedCities] = useState([]);
   const [showHotelReg, setShowHotelReg] = useState(false);
-  const roomsRef = useRef([]);
-  const roomsStatusRef = useRef("idle");
+  const roomsRef = useRef(rooms);
+  const roomsStatusRef = useRef(rooms.length ? "loading" : "idle");
   const roomsRequestRef = useRef(null);
   const isOwner = user?.role === "hotelOwner";
 
@@ -51,16 +71,15 @@ export const AppProvider = ({ children }) => {
         roomsStatusRef.current = "success";
         setRooms(nextRooms);
         setRoomsStatus("success");
+        writeCachedRooms(nextRooms);
         return nextRooms;
       })
       .catch((error) => {
         const message = error.response?.data?.message || error.message || "Unable to fetch rooms.";
-        roomsRef.current = [];
         roomsStatusRef.current = "error";
-        setRooms([]);
         setRoomsStatus("error");
         setRoomsError(message);
-        return [];
+        return roomsRef.current;
       })
       .finally(() => {
         roomsRequestRef.current = null;

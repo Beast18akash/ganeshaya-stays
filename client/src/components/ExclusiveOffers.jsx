@@ -1,5 +1,6 @@
 import Title from './Title'
 import { assets } from '../assets/uiAssets'
+import { optimizeCloudinaryUrl } from '../lib/images'
 import exclusiveOfferCardImg1 from "../assets/exclusiveOfferCardImg1.webp";
 import exclusiveOfferCardImg2 from "../assets/exclusiveOfferCardImg2.webp";
 import exclusiveOfferCardImg3 from "../assets/exclusiveOfferCardImg3.webp";
@@ -23,7 +24,7 @@ const ExclusiveOffers = () => {
     
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12'>
     {exclusiveOffers.map((item)=>(
-        <div key ={item._id} className='group relative flex flex-col items-start justify-between gap-1 pt-12 md:pt-18 px-4 rounded-xl text-white bg-no-repeat bg-cover bg-center' style={{backgroundImage: `url(${item.image})`}}>
+        <div key ={item._id} className='group relative flex flex-col items-start justify-between gap-1 pt-12 md:pt-18 px-4 rounded-xl text-white bg-no-repeat bg-cover bg-center' style={{backgroundImage: `url(${optimizeCloudinaryUrl(item.image, 800)})`}}>
 <p className='px-3 py-1 absolute top-4 left-4 text-xs bg-white text-gray-800 font-medium rounded-full'>{item.priceOff} % OFF</p>
 <div>
     <p className='text-2xl font-medium font-playfair'>{item.title}</p>

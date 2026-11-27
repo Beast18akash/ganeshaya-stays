@@ -3,7 +3,7 @@ import { assets, facilityIcons } from '../assets/uiAssets'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import StarRating from '../components/StarRating'
 import { useApp } from '../context/AppContext'
-import { getRoomImageSrcSet, getRoomImageUrl } from '../lib/images'
+import { getRoomImageSrcSet, optimizeCloudinaryUrl } from '../lib/images'
 
 const CheckBox = ({ label, value = label, selected = false, onChange = () => {} }) => (
     <label className='flex gap-3 items-center cursor-pointer mt-2 text-sm'>
@@ -127,16 +127,16 @@ const AllRooms = () => {
                     <p className='text-sm md:text-base text-gray-500/90 mt-2 max-w-174'>Take advantage of our limited-time offers and special packages to enhance your stay and create unforgettable memories.</p>
                 </div>
 
-                {roomsStatus === 'idle' || roomsStatus === 'loading' ? (
+                {rooms.length === 0 && (roomsStatus === 'idle' || roomsStatus === 'loading') ? (
                     <p className='mt-10 text-gray-500'>Loading rooms...</p>
-                ) : roomsStatus === 'error' ? (
+                ) : rooms.length === 0 && roomsStatus === 'error' ? (
                     <p className='mt-10 text-gray-500'>{roomsError}</p>
                 ) : filteredAndSortedRooms.length === 0 ? (
                     <p className='text-gray-500 mt-10'>No rooms match your filters. Try adjusting your selection.</p>
                 ) : (
                     filteredAndSortedRooms.map((room) => (
                         <div key={room._id} className='flex flex-col md:flex-row items-start py-10 gap-6 border-b border-gray-300 last:pb-30 last:border-0'>
-                            <img src={getRoomImageUrl(room.images?.[0], { width: 760, height: 508 })} srcSet={getRoomImageSrcSet(room.images?.[0], [480, 640, 760], { height: 508 })} sizes="(min-width: 768px) 50vw, 100vw" width="760" height="508" loading="lazy" decoding="async" alt={`${room.hotel.name} ${room.roomType}`} title="View Room Details" className='aspect-[3/2] max-h-65 w-full rounded-xl object-cover shadow-lg cursor-pointer md:w-1/2' onClick={() => { navigate(`/rooms/${room._id}`); scrollTo(0, 0) }} />
+                            <img src={optimizeCloudinaryUrl(room.images?.[0], 800)} srcSet={getRoomImageSrcSet(room.images?.[0], [480, 640, 760], { height: 508 })} sizes="(min-width: 768px) 50vw, 100vw" width="760" height="508" loading="lazy" decoding="async" alt={`${room.hotel.name} ${room.roomType}`} title="View Room Details" className='aspect-[3/2] max-h-65 w-full rounded-xl object-cover shadow-lg cursor-pointer md:w-1/2' onClick={() => { navigate(`/rooms/${room._id}`); scrollTo(0, 0) }} />
                             <div className='md:w-1/2 flex flex-col gap-2'>
                                 <p className='text-gray-500'>{room.hotel.city}</p>
                                 <p onClick={() => { navigate(`/rooms/${room._id}`); scrollTo(0, 0) }} className='text-gray-800 text-3xl font-playfair cursor-pointer'>{room.hotel.name}</p>
