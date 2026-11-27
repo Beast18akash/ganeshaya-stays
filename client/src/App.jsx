@@ -9,6 +9,7 @@ const AllRooms = lazy(() => import("./pages/AllRooms"));
 const RoomDetails = lazy(() => import("./pages/RoomDetails"));
 const MyBookings = lazy(() => import("./pages/MyBookings"));
 const Experience = lazy(() => import("./pages/Experience"));
+const About = lazy(() => import("./pages/About"));
 const Layout = lazy(() => import("./pages/HotelOwner/Layout"));
 const Dashboard = lazy(() => import("./pages/HotelOwner/Dashboard"));
 const AddRoom = lazy(() => import("./pages/HotelOwner/AddRoom"));
@@ -52,6 +53,7 @@ const App = () => {
             }
           />
           <Route path="/experience" element={<Experience />} />
+          <Route path="/about" element={<About />} />
 
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
